@@ -1,56 +1,24 @@
 # Python
 __pycache__/
 *.py[cod]
-*$py.class
-*.so
-.Python
 *.egg-info/
-.eggs/
-dist/
-build/
 
 # Virtual environments
 venv/
-.venv/
-env/
 
-# Data (large files)
-data/
-*.dat
-*.hea
-
-# External repos (cloned separately)
-ecg-selfsupervised/
-references/
+# Data (too large - top level only)
+/data/
 
 # Training outputs
-runs/
+/runs/
 wandb/
 lightning_logs/
 *.ckpt
 
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# LaTeX auxiliary files
+# LaTeX auxiliary
 *.aux
 *.bbl
 *.blg
 *.log
 *.out
-*.toc
-*.lof
-*.lot
-*.fls
-*.fdb_latexmk
 *.synctex.gz
-
-# Keep PDF for paper
-!paper/*.pdf
