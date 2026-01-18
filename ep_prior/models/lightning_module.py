@@ -214,20 +214,18 @@ class EPPriorSSL(pl.LightningModule):
         # Cosine similarity matrix (2B, 2B)
         sim = torch.mm(z, z.t()) / temperature
         
-        # Mask out self-similarity (diagonal)
+        # Mask out self-similarity (diagonal) with large negative instead of -inf
+        # Using -inf causes nan when multiplied by 0 in pos_mask
         mask = torch.eye(2 * B, device=device).bool()
-        sim.masked_fill_(mask, -float("inf"))
+        sim.masked_fill_(mask, -1e9)
         
-        # Positive pairs: (i, i+B) and (i+B, i)
-        pos_mask = torch.zeros(2 * B, 2 * B, device=device)
-        for i in range(B):
-            pos_mask[i, i + B] = 1
-            pos_mask[i + B, i] = 1
-        
-        # Compute loss
-        # For each sample, compute log_softmax and extract positive
+        # Compute log_softmax
         log_softmax = F.log_softmax(sim, dim=1)
-        loss = -(log_softmax * pos_mask).sum() / (2 * B)
+        
+        # Extract positive pair log-probabilities using indexing (avoids 0 * -inf = nan)
+        # Positive pairs: (i, i+B) and (i+B, i)
+        pos_i = torch.arange(B, device=device)
+        loss = -(log_softmax[pos_i, pos_i + B].sum() + log_softmax[pos_i + B, pos_i].sum()) / (2 * B)
         
         return loss
     

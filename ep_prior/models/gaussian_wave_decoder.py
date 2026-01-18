@@ -93,6 +93,10 @@ class GaussianWaveDecoder(nn.Module):
         self.sig_T = make_mlp(d_T, 1)
         self.gate_T = make_mlp(d_T, 1)
         
+        # Learnable output scale to match normalized ECG amplitude
+        # Initialize high (~15) since MLP amplitudes start small
+        self.output_scale = nn.Parameter(torch.tensor(15.0))
+        
         # Initialize biases for reasonable defaults
         self._init_biases()
     
@@ -146,7 +150,9 @@ class GaussianWaveDecoder(nn.Module):
         A = amp_head(z).view(B, self.n_leads, K)  # (B, L, K)
         tau = torch.sigmoid(tau_head(z))          # (B, 1) in [0, 1]
         sig = F.softplus(sig_head(z)) + self.sigma_min  # (B, 1) > sigma_min
-        gate = torch.sigmoid(gate_head(z))        # (B, 1) in [0, 1]
+        # Gate with minimum value to prevent collapse to trivial solution
+        gate_min = 0.1
+        gate = gate_min + (1.0 - gate_min) * torch.sigmoid(gate_head(z))  # (B, 1) in [0.1, 1]
         
         # Expand timing for mixture components
         # tau_k shape: (B, 1, K, 1) for broadcasting with time
@@ -222,8 +228,8 @@ class GaussianWaveDecoder(nn.Module):
             self.K_T, t, offsets=None
         )
         
-        # Sum waves
-        x_hat = x_P + x_QRS + x_T  # (B, n_leads, T)
+        # Sum waves and apply learnable scale
+        x_hat = (x_P + x_QRS + x_T) * self.output_scale  # (B, n_leads, T)
         
         params = {
             "P": params_P,
@@ -232,7 +238,12 @@ class GaussianWaveDecoder(nn.Module):
         }
         
         if return_components:
-            components = {"P": x_P, "QRS": x_QRS, "T": x_T}
+            # Scale components too for consistency
+            components = {
+                "P": x_P * self.output_scale, 
+                "QRS": x_QRS * self.output_scale, 
+                "T": x_T * self.output_scale
+            }
             return x_hat, params, components
         
         return x_hat, params
