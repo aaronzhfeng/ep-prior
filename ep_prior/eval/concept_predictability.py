@@ -17,6 +17,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score, classification_report
 from typing import Dict, List, Tuple, Optional
 from collections import defaultdict
+from tqdm import tqdm
 
 
 # PTB-XL SCP code groupings for concept validation
@@ -95,7 +96,7 @@ class ConceptPredictabilityEvaluator:
         all_labels = []
         
         with torch.no_grad():
-            for batch in loader:
+            for batch in tqdm(loader, desc="Extracting embeddings"):
                 x = batch["x"].to(self.device)
                 z, _ = self.model.encoder(x, return_attention=False)
                 

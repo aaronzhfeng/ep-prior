@@ -13,6 +13,7 @@ from torch.utils.data import DataLoader, TensorDataset
 from sklearn.metrics import roc_auc_score, average_precision_score
 from typing import Dict, List, Tuple, Optional
 import numpy as np
+from tqdm import tqdm
 
 
 class LinearProbe(nn.Module):
@@ -174,33 +175,46 @@ def extract_embeddings(
     device: str = "cpu",
 ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
     """
-    Extract embeddings from a trained EP-Prior model.
+    Extract embeddings from a trained model (EP-Prior or Baseline).
     
     Args:
-        model: Trained EPPriorSSL model
+        model: Trained EPPriorSSL or BaselineSSL model
         dataloader: DataLoader with ECG data
         device: Device to use
         
     Returns:
-        embeddings: Dict with structured latents and 'concat'
+        embeddings: Dict with 'concat' key (and P/QRS/T/HRV for EP-Prior)
         labels: Stacked labels if available
     """
     model.eval()
     model.to(device)
     
-    all_z = {"P": [], "QRS": [], "T": [], "HRV": [], "concat": []}
+    # Check if model is EP-Prior (has structured encoder) or Baseline
+    is_structured = hasattr(model.encoder, 'get_latent_concat')
+    
+    if is_structured:
+        all_z = {"P": [], "QRS": [], "T": [], "HRV": [], "concat": []}
+    else:
+        all_z = {"concat": []}
+    
     all_labels = []
     
     with torch.no_grad():
-        for batch in dataloader:
+        for batch in tqdm(dataloader, desc="Extracting embeddings"):
             x = batch["x"].to(device)
-            z, _ = model.encoder(x, return_attention=False)
             
-            all_z["P"].append(z["P"].cpu())
-            all_z["QRS"].append(z["QRS"].cpu())
-            all_z["T"].append(z["T"].cpu())
-            all_z["HRV"].append(z["HRV"].cpu())
-            all_z["concat"].append(model.encoder.get_latent_concat(z).cpu())
+            if is_structured:
+                # EP-Prior: encoder returns (z_dict, attn)
+                z, _ = model.encoder(x, return_attention=False)
+                all_z["P"].append(z["P"].cpu())
+                all_z["QRS"].append(z["QRS"].cpu())
+                all_z["T"].append(z["T"].cpu())
+                all_z["HRV"].append(z["HRV"].cpu())
+                all_z["concat"].append(model.encoder.get_latent_concat(z).cpu())
+            else:
+                # Baseline: encoder returns single tensor
+                z = model.encoder(x)
+                all_z["concat"].append(z.cpu())
             
             if "superclass" in batch:
                 all_labels.append(batch["superclass"])

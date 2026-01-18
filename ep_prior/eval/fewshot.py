@@ -14,6 +14,7 @@ from torch.utils.data import Subset, DataLoader
 from typing import Dict, List, Tuple, Optional
 import pandas as pd
 from collections import defaultdict
+from tqdm import tqdm
 
 from .probes import train_linear_probe, extract_embeddings, compute_classification_metrics
 
@@ -152,10 +153,10 @@ class FewShotEvaluator:
         """
         results = []
         
-        for k in self.shot_sizes:
+        for k in tqdm(self.shot_sizes, desc="Shot sizes"):
             print(f"\nEvaluating {k}-shot...")
             
-            for seed in range(self.num_seeds):
+            for seed in tqdm(range(self.num_seeds), desc=f"Seeds ({k}-shot)", leave=False):
                 # Sample indices
                 indices = self._sample_fewshot_indices(k, seed)
                 print(f"  Seed {seed}: {len(indices)} samples")

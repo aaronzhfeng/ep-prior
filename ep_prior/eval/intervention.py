@@ -13,6 +13,7 @@ import torch
 import numpy as np
 from typing import Dict, Tuple, List, Optional
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 
 class InterventionTester:
@@ -46,7 +47,7 @@ class InterventionTester:
         
         with torch.no_grad():
             count = 0
-            for batch in dataloader:
+            for batch in tqdm(dataloader, desc="Extracting baseline latents"):
                 if count >= n_samples:
                     break
                 x = batch["x"].to(self.device)
