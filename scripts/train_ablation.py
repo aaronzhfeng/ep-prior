@@ -18,7 +18,7 @@ import torch
 from datetime import datetime
 from pathlib import Path
 import pytorch_lightning as pl
-from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
+from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor, TQDMProgressBar
 from pytorch_lightning.loggers import TensorBoardLogger
 
 import sys
@@ -47,17 +47,16 @@ def train_ablation_no_ep(args):
     model = EPPriorSSL(
         input_channels=12,
         backbone_name="xresnet1d50",
-        d_P=64,
-        d_QRS=64,
+        d_P=32,
+        d_QRS=128,
         d_T=64,
-        d_HRV=64,
-        n_leads=12,
-        n_wave_components=3,
+        d_HRV=32,
+        n_leads_decoder=12,
         lr=args.lr,
         weight_decay=args.weight_decay,
-        lambda_recon=1.0,
-        lambda_ep=0.0,  # DISABLED for ablation
-        lambda_contrastive=args.lambda_contrastive,
+        lam_recon=1.0,
+        lam_ep=0.0,  # DISABLED for ablation
+        lam_contrast=args.lambda_contrastive,
     )
     
     # Setup logging
@@ -72,14 +71,15 @@ def train_ablation_no_ep(args):
     # Callbacks
     checkpoint_callback = ModelCheckpoint(
         dirpath=Path(args.log_dir) / run_name / "checkpoints",
-        filename="epoch={epoch}-val_loss={val/recon_loss:.4f}",
-        monitor="val/recon_loss",
+        filename="epoch={epoch}-val_loss={val/loss:.4f}",
+        monitor="val/loss",
         mode="min",
         save_last=True,
         save_top_k=3,
     )
     
     lr_monitor = LearningRateMonitor(logging_interval="epoch")
+    progress_bar = TQDMProgressBar(refresh_rate=10)
     
     # Trainer
     trainer = pl.Trainer(
@@ -87,9 +87,10 @@ def train_ablation_no_ep(args):
         accelerator="gpu" if torch.cuda.is_available() else "cpu",
         devices=1,
         logger=logger,
-        callbacks=[checkpoint_callback, lr_monitor],
+        callbacks=[checkpoint_callback, lr_monitor, progress_bar],
         log_every_n_steps=10,
         val_check_interval=0.5,  # Validate twice per epoch
+        enable_progress_bar=True,
     )
     
     print(f"\nConfig:")

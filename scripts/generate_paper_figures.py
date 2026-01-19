@@ -65,48 +65,52 @@ def figure_sample_efficiency(results_dir: Path, output_dir: Path):
     ep_prior_df = pd.read_csv(results_dir / "fewshot_ep_prior.csv")
     baseline_df = pd.read_csv(results_dir / "fewshot_baseline.csv")
     
-    # Get unique shot values and conditions
-    shots = sorted(ep_prior_df['n_shots'].unique())
-    conditions = ep_prior_df['condition'].unique()
+    # Get unique shot values and embedding types
+    # CSV columns: shot_size, seed, embedding, auroc_macro, auprc_macro, n_train
+    shots = sorted(ep_prior_df['shot_size'].unique())
+    embeddings = ep_prior_df['embedding'].unique()
     
-    fig, axes = plt.subplots(2, 3, figsize=(12, 8))
-    axes = axes.flatten()
+    # Filter to concat embedding for main comparison
+    ep_concat = ep_prior_df[ep_prior_df['embedding'] == 'concat']
+    base_concat = baseline_df[baseline_df['embedding'] == 'concat']
     
-    for idx, condition in enumerate(conditions[:6]):
-        ax = axes[idx]
-        
-        ep_data = ep_prior_df[ep_prior_df['condition'] == condition]
-        base_data = baseline_df[baseline_df['condition'] == condition]
-        
-        # Group by shots
-        ep_means = ep_data.groupby('n_shots')['auroc'].mean()
-        ep_stds = ep_data.groupby('n_shots')['auroc'].std()
-        base_means = base_data.groupby('n_shots')['auroc'].mean()
-        base_stds = base_data.groupby('n_shots')['auroc'].std()
-        
-        # Plot
-        ax.errorbar(ep_means.index, ep_means.values, yerr=ep_stds.values,
-                   label='EP-Prior', color=COLORS['ep_prior'], marker='o',
-                   linewidth=2, markersize=6, capsize=3)
-        ax.errorbar(base_means.index, base_means.values, yerr=base_stds.values,
-                   label='Baseline', color=COLORS['baseline'], marker='s',
-                   linewidth=2, markersize=6, capsize=3, linestyle='--')
-        
-        ax.set_xlabel('Labeled samples per class')
-        ax.set_ylabel('AUROC')
-        ax.set_title(condition)
-        ax.set_xscale('log')
-        ax.set_xticks(shots)
-        ax.set_xticklabels(shots)
-        ax.set_ylim([0.5, 1.0])
-        ax.grid(True, alpha=0.3)
-        ax.legend(loc='lower right')
+    # Single panel showing overall sample efficiency
+    fig, ax = plt.subplots(1, 1, figsize=(8, 6))
     
-    # Remove empty subplots
-    for idx in range(len(conditions), 6):
-        axes[idx].set_visible(False)
+    # Group by shot_size
+    ep_means = ep_concat.groupby('shot_size')['auroc_macro'].mean()
+    ep_stds = ep_concat.groupby('shot_size')['auroc_macro'].std()
+    base_means = base_concat.groupby('shot_size')['auroc_macro'].mean()
+    base_stds = base_concat.groupby('shot_size')['auroc_macro'].std()
     
-    plt.suptitle('Sample Efficiency: EP-Prior vs Baseline', fontsize=14, fontweight='bold')
+    # Plot
+    ax.errorbar(ep_means.index, ep_means.values, yerr=ep_stds.values,
+               label='EP-Prior', color=COLORS['ep_prior'], marker='o',
+               linewidth=2, markersize=8, capsize=4)
+    ax.errorbar(base_means.index, base_means.values, yerr=base_stds.values,
+               label='Baseline', color=COLORS['baseline'], marker='s',
+               linewidth=2, markersize=8, capsize=4, linestyle='--')
+    
+    ax.set_xlabel('Labeled samples per class (k-shot)')
+    ax.set_ylabel('Macro AUROC')
+    ax.set_title('Sample Efficiency: EP-Prior vs Capacity-Matched Baseline')
+    ax.set_xscale('log')
+    ax.set_xticks(shots)
+    ax.set_xticklabels(shots)
+    ax.set_ylim([0.5, 1.0])
+    ax.grid(True, alpha=0.3)
+    ax.legend(loc='lower right', fontsize=12)
+    
+    # Add delta annotation
+    for shot in shots:
+        ep_val = ep_means.get(shot, 0)
+        base_val = base_means.get(shot, 0)
+        delta = ep_val - base_val
+        if delta > 0:
+            ax.annotate(f'+{delta:.1%}', xy=(shot, ep_val), xytext=(0, 10),
+                       textcoords='offset points', ha='center', fontsize=9,
+                       color=COLORS['ep_prior'])
+    
     plt.tight_layout()
     
     fig.savefig(output_dir / 'fig1_sample_efficiency.pdf')
@@ -265,11 +269,11 @@ def figure_reconstruction_examples(model, dataloader, output_dir: Path, device='
     
     with torch.no_grad():
         z, _ = model.encoder(x, return_attention=False)
-        x_hat, params = model.decoder(z, x.shape[-1], return_components=True)
+        x_hat, params, components = model.decoder(z, x.shape[-1], return_components=True)
     
     fig, axes = plt.subplots(4, 2, figsize=(14, 12))
     
-    t = np.arange(x.shape[-1]) / 500  # Assuming 500Hz sampling
+    t = np.arange(x.shape[-1]) / 100  # 100Hz sampling for PTB-XL
     
     for i in range(4):
         # Original + Reconstruction (Lead II, index 1)
@@ -278,7 +282,7 @@ def figure_reconstruction_examples(model, dataloader, output_dir: Path, device='
                      linewidth=1, label='Original', alpha=0.7)
         ax_main.plot(t, x_hat[i, 1].cpu().numpy(), color=COLORS['ep_prior'], 
                      linewidth=1.5, label='Reconstruction', linestyle='--')
-        ax_main.set_ylabel(f'Sample {i+1}\nAmplitude (mV)')
+        ax_main.set_ylabel(f'Sample {i+1}\nAmplitude')
         ax_main.legend(loc='upper right')
         ax_main.grid(True, alpha=0.3)
         if i == 0:
@@ -288,14 +292,12 @@ def figure_reconstruction_examples(model, dataloader, output_dir: Path, device='
         
         # Wave Decomposition
         ax_waves = axes[i, 1]
-        if 'components' in params:
-            comp = params['components']
-            ax_waves.plot(t, comp['P'][i, 1].cpu().numpy(), color=COLORS['P_wave'],
-                         linewidth=1.5, label='P-wave')
-            ax_waves.plot(t, comp['QRS'][i, 1].cpu().numpy(), color=COLORS['QRS'],
-                         linewidth=1.5, label='QRS')
-            ax_waves.plot(t, comp['T'][i, 1].cpu().numpy(), color=COLORS['T_wave'],
-                         linewidth=1.5, label='T-wave')
+        ax_waves.plot(t, components['P'][i, 1].cpu().numpy(), color=COLORS['P_wave'],
+                     linewidth=1.5, label='P-wave')
+        ax_waves.plot(t, components['QRS'][i, 1].cpu().numpy(), color=COLORS['QRS'],
+                     linewidth=1.5, label='QRS')
+        ax_waves.plot(t, components['T'][i, 1].cpu().numpy(), color=COLORS['T_wave'],
+                     linewidth=1.5, label='T-wave')
         ax_waves.legend(loc='upper right')
         ax_waves.grid(True, alpha=0.3)
         if i == 0:
@@ -343,7 +345,7 @@ def figure_latent_tsne(model, dataloader, output_dir: Path, device='cuda', n_sam
         all_labels = torch.cat(all_labels, dim=0)[:n_samples]
     
     print("  Running t-SNE...")
-    tsne = TSNE(n_components=2, perplexity=30, random_state=42, n_iter=1000)
+    tsne = TSNE(n_components=2, perplexity=30, random_state=42, max_iter=1000)
     z_2d = tsne.fit_transform(all_z)
     
     fig, axes = plt.subplots(1, 2, figsize=(14, 6))
@@ -412,19 +414,23 @@ def figure_comparison_table(results_dir: Path, output_dir: Path):
     ep_df = pd.read_csv(results_dir / "fewshot_ep_prior.csv")
     base_df = pd.read_csv(results_dir / "fewshot_baseline.csv")
     
+    # Filter to concat embedding for main comparison
+    ep_df = ep_df[ep_df['embedding'] == 'concat']
+    base_df = base_df[base_df['embedding'] == 'concat']
+    
     # Compute mean AUROC per shot
-    shots = sorted(ep_df['n_shots'].unique())
+    shots = sorted(ep_df['shot_size'].unique())
     
     table_data = []
     for shot in shots:
-        ep_mean = ep_df[ep_df['n_shots'] == shot]['auroc'].mean()
-        ep_std = ep_df[ep_df['n_shots'] == shot]['auroc'].std()
-        base_mean = base_df[base_df['n_shots'] == shot]['auroc'].mean()
-        base_std = base_df[base_df['n_shots'] == shot]['auroc'].std()
+        ep_mean = ep_df[ep_df['shot_size'] == shot]['auroc_macro'].mean()
+        ep_std = ep_df[ep_df['shot_size'] == shot]['auroc_macro'].std()
+        base_mean = base_df[base_df['shot_size'] == shot]['auroc_macro'].mean()
+        base_std = base_df[base_df['shot_size'] == shot]['auroc_macro'].std()
         delta = ep_mean - base_mean
         
         table_data.append({
-            'Shots': shot,
+            'k-shot': shot,
             'EP-Prior': f'{ep_mean:.3f} ± {ep_std:.3f}',
             'Baseline': f'{base_mean:.3f} ± {base_std:.3f}',
             'Δ': f'{delta:+.3f}',
@@ -464,8 +470,8 @@ def figure_comparison_table(results_dir: Path, output_dir: Path):
 
 def main():
     parser = argparse.ArgumentParser(description="Generate paper-quality figures")
-    parser.add_argument("--results_dir", type=str, 
-                        default="/root/ep-prior/runs/evaluation_01")
+    parser.add_argument("--results_dir", type=str, default=None,
+                        help="Results directory (auto-discovers latest if not specified)")
     parser.add_argument("--ep_prior_ckpt", type=str,
                         default="/root/ep-prior/runs/ep_prior_v4_contrastive_fixed/checkpoints/last.ckpt")
     parser.add_argument("--data_path", type=str, default="/root/ep-prior/data/ptb-xl")
@@ -474,7 +480,17 @@ def main():
     
     args = parser.parse_args()
     
-    results_dir = Path(args.results_dir)
+    # Auto-discover latest evaluation directory if not specified
+    if args.results_dir is None:
+        runs_dir = Path("/root/ep-prior/runs")
+        eval_dirs = sorted(runs_dir.glob("evaluation_*"), key=lambda p: p.stat().st_mtime, reverse=True)
+        if eval_dirs:
+            results_dir = eval_dirs[0]
+            print(f"Auto-discovered results directory: {results_dir}")
+        else:
+            raise FileNotFoundError("No evaluation_* directories found in /root/ep-prior/runs/")
+    else:
+        results_dir = Path(args.results_dir)
     
     if args.output_dir is None:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

@@ -171,14 +171,15 @@ def stratified_evaluation(
     test_z_ep = torch.cat(test_z_ep, dim=0)
     test_z_base = torch.cat(test_z_base, dim=0)
     
-    # Train linear probes
+    # Train linear probes (multi-label: one classifier per class)
     print("\nTraining linear probes...")
     from sklearn.linear_model import LogisticRegression
+    from sklearn.multioutput import MultiOutputClassifier
     
-    probe_ep = LogisticRegression(max_iter=1000, multi_class='ovr')
+    probe_ep = MultiOutputClassifier(LogisticRegression(max_iter=1000))
     probe_ep.fit(train_z_ep.numpy(), train_labels.numpy())
     
-    probe_base = LogisticRegression(max_iter=1000, multi_class='ovr')
+    probe_base = MultiOutputClassifier(LogisticRegression(max_iter=1000))
     probe_base.fit(train_z_base.numpy(), train_labels.numpy())
     
     # Evaluate per rhythm group
@@ -206,16 +207,13 @@ def stratified_evaluation(
         test_labels_subset = test_labels[group_mask]
         
         # Compute AUROC for this superclass (binary: has this condition or not)
-        y_true = test_labels_subset[:, superclass_idx].numpy()
-        
-        # Get probabilities
-        proba_ep = probe_ep.predict_proba(test_z_ep_subset.numpy())[:, superclass_idx]
-        proba_base = probe_base.predict_proba(test_z_base_subset.numpy())[:, superclass_idx]
-        
-        # Since all samples in subset have this condition, compute on full test set instead
+        # MultiOutputClassifier.predict_proba returns list of arrays, one per class
+        # Each array is (n_samples, 2) for binary; we want probability of class 1
         y_true_full = test_labels[:, superclass_idx].numpy()
-        proba_ep_full = probe_ep.predict_proba(test_z_ep.numpy())[:, superclass_idx]
-        proba_base_full = probe_base.predict_proba(test_z_base.numpy())[:, superclass_idx]
+        
+        # Get probabilities for this superclass (index into list, then get prob of positive class)
+        proba_ep_full = probe_ep.predict_proba(test_z_ep.numpy())[superclass_idx][:, 1]
+        proba_base_full = probe_base.predict_proba(test_z_base.numpy())[superclass_idx][:, 1]
         
         auroc_ep = roc_auc_score(y_true_full, proba_ep_full)
         auroc_base = roc_auc_score(y_true_full, proba_base_full)
