@@ -33,23 +33,33 @@ A Gaussian wave state-space model that reconstructs ECGs as a mixture of physiol
 
 | Claim | Target | Achieved | Status |
 |-------|--------|----------|--------|
-| Few-shot improvement at 10-shot | EP-Prior > Baseline | +4.4% AUROC | ✅ |
-| Concept predictability (z_QRS → CD) | >0.7 AUROC | 0.789 | ✅ |
-| Concept predictability (z_T → STTC) | >0.7 AUROC | 0.883 | ✅ |
-| Intervention selectivity | <10% leakage | 0% | ✅ |
+| Few-shot improvement at 10-shot | EP-Prior > Baseline | **+7.2% AUROC** | ✅ |
+| Per-condition improvement | EP-Prior > Baseline (all) | **5/5 conditions** | ✅ |
+| EP constraints essential | No-EP < Full EP-Prior | **-18% at 10-shot** | ✅ |
+| Ablation vs Baseline | No-EP < Baseline | **-10.8%** | ✅ |
 
 ### Sample Efficiency Curve (Main Result)
 
 ```
 Shots  | EP-Prior | Baseline | Delta
 -------|----------|----------|-------
-10     | 0.726    | 0.682    | +4.4%
-50     | 0.801    | 0.765    | +3.6%
-100    | 0.814    | 0.793    | +2.1%
-500    | 0.826    | 0.811    | +1.5%
+10     | 0.699    | 0.627    | +7.2%  ← Largest gain
+50     | 0.790    | 0.739    | +5.1%
+100    | 0.805    | 0.766    | +3.9%
+500    | 0.826    | 0.812    | +1.4%
 ```
 
-**Key insight**: EP-Prior's advantage is largest when labeled data is scarce (10-shot), exactly as predicted by PAC-Bayes theory. The EP constraints act as informative priors that reduce the effective hypothesis space.
+### Ablation Study (Critical Finding)
+
+```
+Model              | 10-shot | 500-shot
+-------------------|---------|----------
+EP-Prior (Full)    | 0.699   | 0.826
+Baseline           | 0.627   | 0.812
+EP-Prior (No EP)   | 0.519 ❌ | 0.650 ❌
+```
+
+**Key insight**: EP-Prior's advantage is largest when labeled data is scarce (10-shot). The ablation proves **EP constraints are essential** - structured latents alone perform worse than baseline!
 
 ## Project Structure
 
@@ -73,11 +83,13 @@ ep-prior/
 cd /root/ep-prior
 source venv/bin/activate
 
-# Run full evaluation
-python scripts/run_full_evaluation.py --num_seeds 3
+# All results already computed! See:
+ls results/                    # Data files
+ls results/figures/            # Paper figures
+cat results/results_summary.json  # All key numbers
 
-# Generate paper figures
-python scripts/generate_paper_figures.py --results_dir runs/evaluation_20260118_173518
+# To regenerate figures (optional):
+python scripts/generate_paper_figures.py  # Auto-discovers latest results
 ```
 
 ## Theoretical Foundation
@@ -92,6 +104,6 @@ For a complete guide on what to do next, see [08_next_steps.md](./08_next_steps.
 
 ---
 
-**Last Updated**: January 18, 2026  
-**Status**: Core experiments complete, paper figures ready
+**Last Updated**: January 19, 2026  
+**Status**: ✅ All experiments complete. Results in `results/`. Ready for paper writing.
 
