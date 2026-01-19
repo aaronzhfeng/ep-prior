@@ -1,0 +1,13 @@
+model,n_shots,mean,std
+baseline,10,0.627,0.097
+baseline,50,0.739,0.084
+baseline,100,0.766,0.07
+baseline,500,0.812,0.061
+ep_prior_full,10,0.699,0.109
+ep_prior_full,50,0.79,0.066
+ep_prior_full,100,0.805,0.058
+ep_prior_full,500,0.826,0.056
+ep_prior_no_ep,10,0.519,0.033
+ep_prior_no_ep,50,0.56,0.026
+ep_prior_no_ep,100,0.587,0.029
+ep_prior_no_ep,500,0.65,0.037

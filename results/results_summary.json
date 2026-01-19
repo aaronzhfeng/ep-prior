@@ -1,35 +1,64 @@
 {
-  "timestamp": "2026-01-18T17:46:11.165253",
-  "ep_prior_ckpt": "/root/ep-prior/runs/ep_prior_v4_contrastive_fixed/checkpoints/last.ckpt",
-  "baseline_ckpt": "/root/ep-prior/runs/baseline_v1_contrastive/checkpoints/last.ckpt",
-  "fewshot_summary": {
-    "ep_prior": {
-      "mean": {
-        "10": 0.7258546482343892,
-        "50": 0.8010131552316193,
-        "100": 0.8136303688268013,
-        "500": 0.8260458389121048
-      },
-      "std": {
-        "10": 0.01131566530341062,
-        "50": 0.007833619413849163,
-        "100": 0.0025581663114334434,
-        "500": 0.0012313443987238542
-      }
+  "timestamp": "2026-01-19T06:15:00",
+  "description": "EP-Prior: Electrophysiology-Informed Priors for ECG SSL - Final Results",
+  
+  "models": {
+    "ep_prior": "/root/ep-prior/runs/ep_prior_v4_contrastive_fixed/checkpoints/last.ckpt",
+    "baseline": "/root/ep-prior/runs/baseline_v1_contrastive/checkpoints/last.ckpt",
+    "ablation_no_ep": "/root/ep-prior/runs/ablation_no_ep_20260119_052548/checkpoints/last.ckpt"
+  },
+
+  "sample_efficiency": {
+    "description": "Few-shot classification AUROC (macro) on PTB-XL",
+    "ep_prior": {"10": 0.699, "50": 0.790, "100": 0.805, "500": 0.826},
+    "baseline": {"10": 0.627, "50": 0.739, "100": 0.766, "500": 0.812},
+    "delta": {"10": "+7.2%", "50": "+5.1%", "100": "+3.9%", "500": "+1.4%"}
+  },
+
+  "failure_mode_analysis": {
+    "description": "Per-condition AUROC comparison",
+    "results": {
+      "NORM": {"ep_prior": 0.905, "baseline": 0.899, "delta": "+0.5%"},
+      "MI": {"ep_prior": 0.806, "baseline": 0.770, "delta": "+3.6%"},
+      "STTC": {"ep_prior": 0.906, "baseline": 0.896, "delta": "+1.0%"},
+      "CD": {"ep_prior": 0.810, "baseline": 0.805, "delta": "+0.6%"},
+      "HYP": {"ep_prior": 0.791, "baseline": 0.770, "delta": "+2.1%"}
     },
-    "baseline": {
-      "mean": {
-        "10": 0.6822991116079509,
-        "50": 0.7647394407115392,
-        "100": 0.7930787359070108,
-        "500": 0.8108271134735766
-      },
-      "std": {
-        "10": 0.008660476009391443,
-        "50": 0.00531913079112847,
-        "100": 0.0016429147927461223,
-        "500": 0.0015668310118962454
-      }
-    }
+    "conclusion": "EP-Prior outperforms baseline on all 5 conditions"
+  },
+
+  "ablation_study": {
+    "description": "Impact of EP constraints on performance",
+    "10_shot": {"ep_prior_full": 0.699, "baseline": 0.627, "ep_prior_no_ep": 0.519},
+    "500_shot": {"ep_prior_full": 0.826, "baseline": 0.812, "ep_prior_no_ep": 0.650},
+    "conclusion": "EP constraints are essential - removing them causes catastrophic failure (worse than baseline)"
+  },
+
+  "key_findings": [
+    "EP-Prior achieves +7.2% improvement over baseline in 10-shot setting",
+    "Largest gains on morphology-related conditions (MI: +3.6%, HYP: +2.1%)",
+    "EP constraints are crucial - structured latents alone are insufficient",
+    "Benefits persist but diminish with more labeled data"
+  ],
+
+  "files": {
+    "data": [
+      "fewshot_ep_prior.csv",
+      "fewshot_baseline.csv",
+      "failure_mode_results.csv",
+      "ablation_summary.csv",
+      "ablation_results.csv"
+    ],
+    "figures": [
+      "figures/sample_efficiency_curve.png",
+      "figures/fig1_sample_efficiency.pdf",
+      "figures/fig2_intervention_heatmap.pdf",
+      "figures/fig4_reconstruction_examples.pdf",
+      "figures/fig5_latent_tsne.pdf",
+      "figures/table1_comparison.pdf",
+      "figures/ablation_comparison.pdf",
+      "figures/ablation_bar.pdf"
+    ]
   }
 }
+

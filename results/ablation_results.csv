@@ -1,0 +1,181 @@
+model,model_display,n_shots,seed,condition,auroc
+ep_prior_full,EP-Prior (Full),10,0,NORM,0.762290581474054
+ep_prior_full,EP-Prior (Full),10,0,MI,0.6236827007943514
+ep_prior_full,EP-Prior (Full),10,0,STTC,0.7376656285730964
+ep_prior_full,EP-Prior (Full),10,0,CD,0.5318008225616921
+ep_prior_full,EP-Prior (Full),10,0,HYP,0.6334754116459529
+ep_prior_full,EP-Prior (Full),10,1,NORM,0.7621678207020065
+ep_prior_full,EP-Prior (Full),10,1,MI,0.658356134157105
+ep_prior_full,EP-Prior (Full),10,1,STTC,0.8161670197558248
+ep_prior_full,EP-Prior (Full),10,1,CD,0.7408575300405593
+ep_prior_full,EP-Prior (Full),10,1,HYP,0.6274742129834079
+ep_prior_full,EP-Prior (Full),10,2,NORM,0.8639802237441194
+ep_prior_full,EP-Prior (Full),10,2,MI,0.5338261253309797
+ep_prior_full,EP-Prior (Full),10,2,STTC,0.864087570689365
+ep_prior_full,EP-Prior (Full),10,2,CD,0.7484482203100716
+ep_prior_full,EP-Prior (Full),10,2,HYP,0.585562425083591
+ep_prior_full,EP-Prior (Full),50,0,NORM,0.8720387116845552
+ep_prior_full,EP-Prior (Full),50,0,MI,0.7469020300088262
+ep_prior_full,EP-Prior (Full),50,0,STTC,0.8383195016235234
+ep_prior_full,EP-Prior (Full),50,0,CD,0.7145246578977296
+ep_prior_full,EP-Prior (Full),50,0,HYP,0.7180501230206296
+ep_prior_full,EP-Prior (Full),50,1,NORM,0.8749530187798757
+ep_prior_full,EP-Prior (Full),50,1,MI,0.7594627096204766
+ep_prior_full,EP-Prior (Full),50,1,STTC,0.859137455262974
+ep_prior_full,EP-Prior (Full),50,1,CD,0.7601161821007543
+ep_prior_full,EP-Prior (Full),50,1,HYP,0.7499369124976342
+ep_prior_full,EP-Prior (Full),50,2,NORM,0.881650207474113
+ep_prior_full,EP-Prior (Full),50,2,MI,0.706504854368932
+ep_prior_full,EP-Prior (Full),50,2,STTC,0.867314015865549
+ep_prior_full,EP-Prior (Full),50,2,CD,0.7707547572116296
+ep_prior_full,EP-Prior (Full),50,2,HYP,0.7373746135890479
+ep_prior_full,EP-Prior (Full),100,0,NORM,0.8851345954149692
+ep_prior_full,EP-Prior (Full),100,0,MI,0.7601015004413062
+ep_prior_full,EP-Prior (Full),100,0,STTC,0.8691521396516261
+ep_prior_full,EP-Prior (Full),100,0,CD,0.7469379003828512
+ep_prior_full,EP-Prior (Full),100,0,HYP,0.746248265093685
+ep_prior_full,EP-Prior (Full),100,1,NORM,0.8899777601204065
+ep_prior_full,EP-Prior (Full),100,1,MI,0.770654236540159
+ep_prior_full,EP-Prior (Full),100,1,STTC,0.8648727219454354
+ep_prior_full,EP-Prior (Full),100,1,CD,0.7725837250293771
+ep_prior_full,EP-Prior (Full),100,1,HYP,0.7606440445397767
+ep_prior_full,EP-Prior (Full),100,2,NORM,0.86272739120747
+ep_prior_full,EP-Prior (Full),100,2,MI,0.7486154015887025
+ep_prior_full,EP-Prior (Full),100,2,STTC,0.8613990571317715
+ep_prior_full,EP-Prior (Full),100,2,CD,0.7784496891702362
+ep_prior_full,EP-Prior (Full),100,2,HYP,0.7592758343322189
+ep_prior_full,EP-Prior (Full),500,0,NORM,0.89777811410866
+ep_prior_full,EP-Prior (Full),500,0,MI,0.780989629302736
+ep_prior_full,EP-Prior (Full),500,0,STTC,0.8898831086038156
+ep_prior_full,EP-Prior (Full),500,0,CD,0.7877662901330503
+ep_prior_full,EP-Prior (Full),500,0,HYP,0.7671460002523499
+ep_prior_full,EP-Prior (Full),500,1,NORM,0.900737825873094
+ep_prior_full,EP-Prior (Full),500,1,MI,0.7845895851721094
+ep_prior_full,EP-Prior (Full),500,1,STTC,0.8843401238616165
+ep_prior_full,EP-Prior (Full),500,1,CD,0.7924038607331034
+ep_prior_full,EP-Prior (Full),500,1,HYP,0.7741329411393603
+ep_prior_full,EP-Prior (Full),500,2,NORM,0.888223794569097
+ep_prior_full,EP-Prior (Full),500,2,MI,0.7771127537511033
+ep_prior_full,EP-Prior (Full),500,2,STTC,0.8916033452479464
+ep_prior_full,EP-Prior (Full),500,2,CD,0.7928492570410524
+ep_prior_full,EP-Prior (Full),500,2,HYP,0.7784524635669674
+ep_prior_no_ep,EP-Prior (No EP Loss),10,0,NORM,0.5673582470434413
+ep_prior_no_ep,EP-Prior (No EP Loss),10,0,MI,0.4925672992056487
+ep_prior_no_ep,EP-Prior (No EP Loss),10,0,STTC,0.4967706934854192
+ep_prior_no_ep,EP-Prior (No EP Loss),10,0,CD,0.5299742238732421
+ep_prior_no_ep,EP-Prior (No EP Loss),10,0,HYP,0.5552508516812819
+ep_prior_no_ep,EP-Prior (No EP Loss),10,1,NORM,0.5765964155536217
+ep_prior_no_ep,EP-Prior (No EP Loss),10,1,MI,0.5391824801412181
+ep_prior_no_ep,EP-Prior (No EP Loss),10,1,STTC,0.5037580818503016
+ep_prior_no_ep,EP-Prior (No EP Loss),10,1,CD,0.539861784996778
+ep_prior_no_ep,EP-Prior (No EP Loss),10,1,HYP,0.5300414800328055
+ep_prior_no_ep,EP-Prior (No EP Loss),10,2,NORM,0.4926557947708956
+ep_prior_no_ep,EP-Prior (No EP Loss),10,2,MI,0.4810889232127096
+ep_prior_no_ep,EP-Prior (No EP Loss),10,2,STTC,0.5238710017087913
+ep_prior_no_ep,EP-Prior (No EP Loss),10,2,CD,0.49401439482961224
+ep_prior_no_ep,EP-Prior (No EP Loss),10,2,HYP,0.46516584127184407
+ep_prior_no_ep,EP-Prior (No EP Loss),50,0,NORM,0.5546213965299062
+ep_prior_no_ep,EP-Prior (No EP Loss),50,0,MI,0.5778773168578993
+ep_prior_no_ep,EP-Prior (No EP Loss),50,0,STTC,0.5315954708446786
+ep_prior_no_ep,EP-Prior (No EP Loss),50,0,CD,0.5219132614381563
+ep_prior_no_ep,EP-Prior (No EP Loss),50,0,HYP,0.5658515235631821
+ep_prior_no_ep,EP-Prior (No EP Loss),50,1,NORM,0.5994921403676937
+ep_prior_no_ep,EP-Prior (No EP Loss),50,1,MI,0.5569527802294792
+ep_prior_no_ep,EP-Prior (No EP Loss),50,1,STTC,0.558844568664682
+ep_prior_no_ep,EP-Prior (No EP Loss),50,1,CD,0.6159854630226298
+ep_prior_no_ep,EP-Prior (No EP Loss),50,1,HYP,0.566253706390764
+ep_prior_no_ep,EP-Prior (No EP Loss),50,2,NORM,0.5790591984394247
+ep_prior_no_ep,EP-Prior (No EP Loss),50,2,MI,0.543918799646955
+ep_prior_no_ep,EP-Prior (No EP Loss),50,2,STTC,0.5558870892977933
+ep_prior_no_ep,EP-Prior (No EP Loss),50,2,CD,0.5225387115727227
+ep_prior_no_ep,EP-Prior (No EP Loss),50,2,HYP,0.5565047157908019
+ep_prior_no_ep,EP-Prior (No EP Loss),100,0,NORM,0.6183855276821337
+ep_prior_no_ep,EP-Prior (No EP Loss),100,0,MI,0.5855990732568402
+ep_prior_no_ep,EP-Prior (No EP Loss),100,0,STTC,0.5754128625172682
+ep_prior_no_ep,EP-Prior (No EP Loss),100,0,CD,0.573466699518593
+ep_prior_no_ep,EP-Prior (No EP Loss),100,0,HYP,0.5864693079300991
+ep_prior_no_ep,EP-Prior (No EP Loss),100,1,NORM,0.6434640399224757
+ep_prior_no_ep,EP-Prior (No EP Loss),100,1,MI,0.5916229037952339
+ep_prior_no_ep,EP-Prior (No EP Loss),100,1,STTC,0.55025940893905
+ep_prior_no_ep,EP-Prior (No EP Loss),100,1,CD,0.6254311815321634
+ep_prior_no_ep,EP-Prior (No EP Loss),100,1,HYP,0.5998162576493596
+ep_prior_no_ep,EP-Prior (No EP Loss),100,2,NORM,0.6146968187302668
+ep_prior_no_ep,EP-Prior (No EP Loss),100,2,MI,0.5669913945278022
+ep_prior_no_ep,EP-Prior (No EP Loss),100,2,STTC,0.5387305042708337
+ep_prior_no_ep,EP-Prior (No EP Loss),100,2,CD,0.5641512831204276
+ep_prior_no_ep,EP-Prior (No EP Loss),100,2,HYP,0.5762629329379849
+ep_prior_no_ep,EP-Prior (No EP Loss),500,0,NORM,0.7105687775633669
+ep_prior_no_ep,EP-Prior (No EP Loss),500,0,MI,0.6244075463371581
+ep_prior_no_ep,EP-Prior (No EP Loss),500,0,STTC,0.6170705159679851
+ep_prior_no_ep,EP-Prior (No EP Loss),500,0,CD,0.6807847030059513
+ep_prior_no_ep,EP-Prior (No EP Loss),500,0,HYP,0.6389206516938994
+ep_prior_no_ep,EP-Prior (No EP Loss),500,1,NORM,0.7179672161472457
+ep_prior_no_ep,EP-Prior (No EP Loss),500,1,MI,0.6364684466019417
+ep_prior_no_ep,EP-Prior (No EP Loss),500,1,STTC,0.607271004226769
+ep_prior_no_ep,EP-Prior (No EP Loss),500,1,CD,0.6641901368409081
+ep_prior_no_ep,EP-Prior (No EP Loss),500,1,HYP,0.6135515898050596
+ep_prior_no_ep,EP-Prior (No EP Loss),500,2,NORM,0.7067304013688667
+ep_prior_no_ep,EP-Prior (No EP Loss),500,2,MI,0.6318038393645189
+ep_prior_no_ep,EP-Prior (No EP Loss),500,2,STTC,0.6154384085464745
+ep_prior_no_ep,EP-Prior (No EP Loss),500,2,CD,0.6526844604071111
+ep_prior_no_ep,EP-Prior (No EP Loss),500,2,HYP,0.6348712226357959
+baseline,Baseline (Unstructured),10,0,NORM,0.5991078823346409
+baseline,Baseline (Unstructured),10,0,MI,0.5163879082082966
+baseline,Baseline (Unstructured),10,0,STTC,0.6194786183626964
+baseline,Baseline (Unstructured),10,0,CD,0.506185796596035
+baseline,Baseline (Unstructured),10,0,HYP,0.6029883761276891
+baseline,Baseline (Unstructured),10,1,NORM,0.6834840516099739
+baseline,Baseline (Unstructured),10,1,MI,0.568918799646955
+baseline,Baseline (Unstructured),10,1,STTC,0.7361468301520971
+baseline,Baseline (Unstructured),10,1,CD,0.6775129354459649
+baseline,Baseline (Unstructured),10,1,HYP,0.6759668159737557
+baseline,Baseline (Unstructured),10,2,NORM,0.7965845598900199
+baseline,Baseline (Unstructured),10,2,MI,0.47514563106796115
+baseline,Baseline (Unstructured),10,2,STTC,0.7702711518718304
+baseline,Baseline (Unstructured),10,2,CD,0.637917677495167
+baseline,Baseline (Unstructured),10,2,HYP,0.5357725853258469
+baseline,Baseline (Unstructured),50,0,NORM,0.8240997893727849
+baseline,Baseline (Unstructured),50,0,MI,0.6645984112974405
+baseline,Baseline (Unstructured),50,0,STTC,0.7950148617916328
+baseline,Baseline (Unstructured),50,0,CD,0.6275006159736174
+baseline,Baseline (Unstructured),50,0,HYP,0.679113305154249
+baseline,Baseline (Unstructured),50,1,NORM,0.8614392439281766
+baseline,Baseline (Unstructured),50,1,MI,0.671504854368932
+baseline,Baseline (Unstructured),50,1,STTC,0.8451500886442636
+baseline,Baseline (Unstructured),50,1,CD,0.7276164663962701
+baseline,Baseline (Unstructured),50,1,HYP,0.7180422370828339
+baseline,Baseline (Unstructured),50,2,NORM,0.8587830707850382
+baseline,Baseline (Unstructured),50,2,MI,0.6233340688437776
+baseline,Baseline (Unstructured),50,2,STTC,0.7827511654231291
+baseline,Baseline (Unstructured),50,2,CD,0.7361323016564952
+baseline,Baseline (Unstructured),50,2,HYP,0.66589253043972
+baseline,Baseline (Unstructured),100,0,NORM,0.8675814866665825
+baseline,Baseline (Unstructured),100,0,MI,0.7068126654898501
+baseline,Baseline (Unstructured),100,0,STTC,0.824142142135268
+baseline,Baseline (Unstructured),100,0,CD,0.6972359368484894
+baseline,Baseline (Unstructured),100,0,HYP,0.7098034035707527
+baseline,Baseline (Unstructured),100,1,NORM,0.8715703709309219
+baseline,Baseline (Unstructured),100,1,MI,0.714511253309797
+baseline,Baseline (Unstructured),100,1,STTC,0.8244454440053244
+baseline,Baseline (Unstructured),100,1,CD,0.7309273245896668
+baseline,Baseline (Unstructured),100,1,HYP,0.7020594126553531
+baseline,Baseline (Unstructured),100,2,NORM,0.8710583071625866
+baseline,Baseline (Unstructured),100,2,MI,0.6901368049426302
+baseline,Baseline (Unstructured),100,2,STTC,0.8178071389248464
+baseline,Baseline (Unstructured),100,2,CD,0.7412342215988781
+baseline,Baseline (Unstructured),100,2,HYP,0.7267345120181693
+baseline,Baseline (Unstructured),500,0,NORM,0.8915004981901196
+baseline,Baseline (Unstructured),500,0,MI,0.7524624889673432
+baseline,Baseline (Unstructured),500,0,STTC,0.8735299873986658
+baseline,Baseline (Unstructured),500,0,CD,0.7780457526249951
+baseline,Baseline (Unstructured),500,0,HYP,0.7595478991861713
+baseline,Baseline (Unstructured),500,1,NORM,0.8913710108004255
+baseline,Baseline (Unstructured),500,1,MI,0.7597572815533981
+baseline,Baseline (Unstructured),500,1,STTC,0.8718841455528507
+baseline,Baseline (Unstructured),500,1,CD,0.785917184716273
+baseline,Baseline (Unstructured),500,1,HYP,0.7585779288372972
+baseline,Baseline (Unstructured),500,2,NORM,0.8860906159479695
+baseline,Baseline (Unstructured),500,2,MI,0.7535061782877318
+baseline,Baseline (Unstructured),500,2,STTC,0.8831223382399566
+baseline,Baseline (Unstructured),500,2,CD,0.7731641617072893
+baseline,Baseline (Unstructured),500,2,HYP,0.7567503627531387
