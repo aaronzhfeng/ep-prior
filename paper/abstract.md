@@ -1,0 +1,6 @@
+# EP-Prior Abstract
+
+**Title:** EP-Prior: Interpretable ECG Representations via Electrophysiology Constraints
+
+**Abstract:** Accurate ECG classification with limited labeled data requires representations that are both sample-efficient and clinically interpretable. We present EP-Prior, a self-supervised framework that aligns learned ECG representations with cardiac electrophysiology. The encoder produces a prescribed, wave-factorized latent space (z_P, z_QRS, z_T, z_HRV), and an EP-constrained Gaussian-wave decoder reconstructs signals under soft priors on P/QRS/T ordering, refractory periods, and physiologic duration bounds. This structure makes each component inspectable and supports factor-level probes and interventions. We provide a PAC-Bayes analysis that interprets EP constraints as an electrophysiology-informed prior, reducing the complexity term and predicting the largest gains in few-shot regimes. On PTB-XL, EP-Prior improves 10-shot AUROC from 0.627 to 0.699 (+0.072) over a capacity-matched generic SSL baseline, with gains across all five diagnostic superclasses. Ablations show the constraints are necessary: removing the EP losses drops 10-shot AUROC to 0.519, below the baseline. EP-Prior illustrates how embedding domain structure as model priors can jointly improve explainability and label efficiency.
+

@@ -1,0 +1,412 @@
+%%%% EP-Prior Paper for IJCAI-ECAI 2026
+
+\typeout{EP-Prior: Interpretable ECG Representations via Electrophysiology Constraints}
+
+\documentclass{article}
+\pdfpagewidth=8.5in
+\pdfpageheight=11in
+
+\usepackage{ijcai26}
+\usepackage{times}
+\usepackage{soul}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage[small]{caption}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{booktabs}
+\usepackage{pifont}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage[switch]{lineno}
+\usepackage{xcolor}
+\usepackage{subcaption}
+
+% Comment out this line in the camera-ready submission
+\linenumbers
+
+\urlstyle{same}
+
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+
+% Placeholder command for figures
+\newcommand{\placeholderfig}[2]{%
+  \begin{center}
+    \fbox{\parbox{#1}{%
+      \vspace{2em}
+      \centering
+      \textcolor{gray}{\textbf{[PLACEHOLDER]}\\#2}
+      \vspace{2em}
+    }}
+  \end{center}
+}
+
+\pdfinfo{
+/TemplateVersion (IJCAI.2026.0)
+}
+
+\title{EP-Prior: Interpretable ECG Representations via Electrophysiology Constraints}
+
+% Anonymous submission
+\author{
+Anonymous Author(s)
+\affiliations
+Anonymous Institution
+\emails
+anonymous@example.com
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We present EP-Prior, a self-supervised method that produces interpretable ECG representations aligned with cardiac electrophysiology. Our encoder learns structured latent representations $(z_P, z_{QRS}, z_T, z_{HRV})$ corresponding to clinically meaningful cardiac components, while an EP-constrained decoder enforces temporal ordering and refractory period constraints as soft priors, biasing the model toward physiologically plausible reconstructions. Unlike prior physiology-aware methods that improve performance as a black box, EP-Prior's representations are inspectable---each latent component has physiological meaning that clinicians can examine. We provide PAC-Bayes-motivated analysis showing how EP constraints reduce the complexity term in generalization bounds, predicting largest gains in few-shot regimes. Experiments on PTB-XL demonstrate \textbf{+7.2\% AUROC improvement} over capacity-matched baselines in 10-shot classification, with gains on all five diagnostic categories. Critically, ablation studies reveal that EP constraints are \emph{essential}---removing them causes catastrophic failure (10-shot AUROC drops from 0.699 to 0.519, worse than baseline), demonstrating that structured latents alone are insufficient. Our work shows how domain knowledge can be embedded as architectural priors to achieve both explainability and sample efficiency.
+\end{abstract}
+
+%==============================================================================
+\section{Introduction}
+%==============================================================================
+
+ECG-based cardiac diagnosis is critical for early detection of arrhythmias and conduction abnormalities~\cite{goldberger2000physiobank}. While deep learning has achieved strong performance on large datasets~\cite{wagner2020ptbxl}, significant challenges remain in low-data regimes, particularly for wearable and portable devices~\cite{liu2021wearable}:
+
+\begin{itemize}
+    \item \textbf{Rare arrhythmias:} Many conditions appear in $<1\%$ of records
+    \item \textbf{Patient-specific adaptation:} Personalized models must adapt from few examples
+    \item \textbf{New device deployment:} Transfer to new ECG hardware with limited labels
+\end{itemize}
+
+Equally important is the need for \textbf{interpretability}. Black-box models that achieve high accuracy but provide no insight into \emph{what} they have learned face barriers to clinical adoption. Regulatory frameworks increasingly require explainable AI for medical devices.
+
+\textbf{Key observation:} Cardiac electrophysiology (EP) provides rich mathematical structure---P-QRS-T wave morphology, conduction dynamics, refractory constraints---that is well-understood but rarely exploited in representation learning. Prior work uses EP knowledge in ECGI (inverse problems) but not for learning interpretable representations.
+
+\textbf{Our approach:} We propose \textbf{EP-Prior}, which injects EP knowledge as architectural priors in a self-supervised framework:
+\begin{enumerate}
+    \item A \textbf{structured latent space} where encoder outputs decompose into $(z_P, z_{QRS}, z_T, z_{HRV})$
+    \item An \textbf{EP-constrained decoder} using a Gaussian wave model that reconstructs ECG signals
+    \item \textbf{Soft constraint losses} enforcing temporal ordering, refractory periods, and duration bounds
+\end{enumerate}
+
+\textbf{Contributions:}
+\begin{enumerate}
+    \item \textbf{Interpretability:} Structured latent space with physiologically meaningful components, validated through intervention tests and concept predictability
+    \item \textbf{Theory:} PAC-Bayes-motivated analysis explaining \emph{why} EP constraints help in low-data regimes
+    \item \textbf{Empirical:} Competitive few-shot classification on PTB-XL with inspectable, concept-level parameters
+\end{enumerate}
+
+\textbf{Methodological novelty.} Prior physiology-aware ECG methods inject domain knowledge via data augmentation or loss terms, treating the learned representations as black boxes. EP-Prior differs fundamentally: we encode electrophysiology as \emph{architectural constraints} that shape the hypothesis class itself. The structured latent decomposition $(z_P, z_{QRS}, z_T, z_{HRV})$ is \emph{prescribed} by cardiac physiology, not discovered by the model. The EP-constrained decoder enforces wave ordering and refractory periods through \emph{hard} architectural choices (Gaussian waves with timing parameters), not soft regularization. This design enables both interpretability (each latent has known meaning) and theoretical analysis (constrained hypothesis class has reduced complexity). Our ablation demonstrates this distinction is critical: structured latents without EP constraints perform \emph{worse} than unstructured baselines.
+
+%==============================================================================
+\section{Related Work}
+%==============================================================================
+
+\textbf{Self-supervised learning for ECG.} Generic SSL approaches~\cite{mehari2022ssl} apply contrastive~\cite{chen2020simclr} and predictive coding to ECG, treating representations as black boxes. PhysioCLR~\cite{physioclr2025} represents the state-of-the-art in physiology-aware ECG SSL, integrating domain knowledge via augmentations (lead dropout, baseline wander), sampling strategies (preserving physiological similarity), and pretext tasks (heart rate prediction). While PhysioCLR achieves strong downstream performance, its representations remain opaque---clinicians cannot inspect what the model learned about P-waves vs.\ QRS complexes. \textbf{Our key distinction:} EP-Prior encodes physiology as \emph{architectural constraints} that produce inspectable representations, enabling both interpretability and theoretical analysis.
+
+\textbf{Few-shot ECG classification.} The few-shot ECG problem has been studied with meta-learning~\cite{palczynski2022fewshot} and knowledge-enhanced transfer~\cite{fan2025metatransfer}. These approaches achieve sample efficiency through algorithmic techniques (MAML, prototypical networks) rather than domain-structured representations. EP-Prior provides a complementary perspective: sample efficiency through physics-informed inductive bias, with theoretical grounding from PAC-Bayes.
+
+\textbf{PQRST-structured methods.} ECG-GraphNet~\cite{ecggraphnet2025} constructs graphs where nodes correspond to P/QRS/T segments for supervised arrhythmia classification. MINA~\cite{hong2019mina} uses multilevel attention at beat, rhythm, and frequency scales. These methods leverage PQRST structure for \emph{classification}, but are supervised (require labels) and lack self-supervised pretraining. \textbf{Our distinction:} EP-Prior uses PQRST structure for \emph{representation learning} in an SSL framework, enabling transfer to downstream tasks.
+
+\textbf{Interpretable ECG representations.} VAE-SCAN~\cite{vaescan2025} and $\beta$-TCVAE~\cite{betatcvae2024} learn disentangled ECG representations through variational inference. These methods discover latent factors \emph{post-hoc}---the model decides what factors to learn, and interpretability is assessed by correlating factors with known attributes. \textbf{Critical difference:} EP-Prior uses \emph{prescribed} factors where each latent $(z_P, z_{QRS}, z_T, z_{HRV})$ has predetermined physiological meaning, enabling: (1) validation that the model learned the intended structure, (2) clinician-legible representations, and (3) theoretical analysis of the constrained hypothesis class.
+
+\textbf{Sample complexity and architectural priors.} Behboodi and Cesa~\shortcite{behboodi2024} prove that architectural priors (equivariance, locality, weight sharing) reduce sample complexity. Time-series learning theory~\cite{kuznetsov2015learning} and PAC-Bayes bounds for dynamical systems~\cite{eringis2024pacbayes} provide foundations for temporal data. \textbf{Our contribution:} We instantiate this general principle for cardiac electrophysiology, showing how EP constraints map to an informative prior and validating theory-predicted sample efficiency gains.
+
+\textbf{Physics-informed cardiac modeling.} PINNs for cardiac activation mapping~\cite{sahli2020pinns} embed wave propagation constraints for inverse problems. Gaussian wave models~\cite{mcsharry2003dynamical,clifford2006ecgsyn} provide analytical ECG generators. \textbf{Our approach:} We adapt these physics models as a differentiable decoder for representation learning, rather than inverse problems or synthesis.
+
+\textbf{Summary.} Table~\ref{tab:related_work} compares EP-Prior with related approaches. Our unique contribution is the combination of: (1) \emph{prescribed} physiology-aligned factors (not discovered), (2) discriminative SSL (not generative/supervised), (3) EP-constrained decoder (not soft heuristics), and (4) PAC-Bayes-motivated design with empirical validation.
+
+\input{assets/table1_related_work.tex}
+
+%==============================================================================
+\section{Theoretical Foundation}
+%==============================================================================
+
+\subsection{Problem Setup}
+
+We consider ECG signals $x_t \in \mathbb{R}^{12}$ (12-lead) with labels $y \in \{1, \ldots, K\}$. ECG signals arise from a latent cardiac state-space model:
+\begin{equation}
+    x_t = g(z_t) + \epsilon_t, \quad z_{t+1} = f_{EP}(z_t) + \eta_t
+\end{equation}
+where $f_{EP}$ encodes cardiac EP dynamics (atrial depolarization, AV conduction, ventricular depolarization/repolarization).
+
+\begin{definition}[EP-Structured Encoder Class]
+The EP-structured hypothesis class constrains encoder outputs to physiologically meaningful components:
+\begin{equation}
+    \mathcal{H}_{EP} = \{h_\theta : h_\theta(x) = (\hat{z}_P, \hat{z}_{QRS}, \hat{z}_T, \hat{z}_{HRV})\}
+\end{equation}
+where the decoder $d_\phi$ is EP-constrained (enforces wave ordering and refractory periods).
+\end{definition}
+
+This structured hypothesis class is \emph{smaller} than generic encoder classes, which is the key to sample efficiency as we show next.
+
+\subsection{PAC-Bayes Motivation}
+
+We use PAC-Bayes theory to \emph{motivate} our architectural choices and \emph{predict} where gains should appear. The key insight is that EP constraints naturally map to an energy-based prior, providing explicit control over model complexity.
+
+\textbf{Standard PAC-Bayes bound~\cite{mcallester1999}:}
+\begin{equation}
+    \mathcal{R}(Q) \leq \hat{\mathcal{R}}(Q) + \sqrt{\frac{\text{KL}(Q\|P) + \log(2n/\delta)}{2n}}
+\end{equation}
+
+\textbf{Why this matters for low-data regimes.} The bound has two terms: empirical risk $\hat{\mathcal{R}}(Q)$ and a complexity penalty $\propto \text{KL}(Q\|P)/\sqrt{n}$. When $n$ is small (few-shot), the complexity term dominates. By choosing a prior $P$ that assigns high probability to EP-consistent hypotheses, we reduce KL divergence for data that follows cardiac physiology.
+
+\textbf{Design insight:} By defining $P = P_{EP}$ (an EP-informed prior), we enable low KL divergence when the data is EP-consistent. The $\sqrt{1/n}$ scaling predicts \textbf{largest gains in few-shot regimes}.
+
+\begin{proposition}[EP Prior Decomposition]
+Define the EP prior as $P_{EP}(\theta) \propto P_0(\theta) \exp(-\lambda V_{EP}(\theta))$ where:
+\begin{align}
+    V_{EP}(\theta) = &\text{ReLU}(\tau_P - \tau_{QRS}) + \text{ReLU}(\tau_{QRS} - \tau_T) \nonumber \\
+    &+ \text{ReLU}(\Delta_{PR}^{min} - |\tau_{QRS} - \tau_P|)
+\end{align}
+Then $\text{KL}(Q \| P_{EP}) = \text{KL}(Q \| P_0) + \lambda \mathbb{E}_Q[V_{EP}] + \text{const}$.
+\end{proposition}
+
+\textbf{Intuition:} $V_{EP}(\theta)$ is zero when timing constraints are satisfied (P before QRS before T, with minimum PR interval). Training with EP constraint losses pushes the posterior $Q$ toward low $V_{EP}$ regions, reducing KL to the EP prior. This explains why our ablation shows \emph{catastrophic failure} without EP constraints---without them, the model explores a much larger hypothesis space, increasing the complexity term.
+
+\textbf{Testable prediction:} EP-Prior should show largest advantage in few-shot regimes (KL reduction dominates) and converge to baselines at high-$n$ (empirical risk dominates). We validate this prediction via sample-efficiency curves in Section~\ref{sec:experiments}.
+
+%==============================================================================
+\section{Method: EP-Prior}
+%==============================================================================
+
+\subsection{Architecture Overview}
+
+Figure~\ref{fig:architecture} illustrates the EP-Prior framework. An ECG signal passes through a structured encoder producing wave-specific latents, which are decoded via an EP-constrained Gaussian wave model.
+
+\begin{figure}[t]
+    \centering
+    \fbox{\parbox{0.85\columnwidth}{
+        \vspace{0.5em}
+        \centering
+        \small
+        \textbf{ECG Input} $x \in \mathbb{R}^{12 \times 1000}$ \\[0.3em]
+        $\downarrow$ \\[0.2em]
+        \textbf{xresnet1d50 Backbone} \\[0.3em]
+        $\downarrow$ \\[0.2em]
+        \textbf{Attention-Pooled Heads} \\[0.2em]
+        $\downarrow$ \hspace{1em} $\downarrow$ \hspace{1em} $\downarrow$ \hspace{1em} $\downarrow$ \\[0.2em]
+        $z_P^{32}$ \hspace{0.5em} $z_{QRS}^{128}$ \hspace{0.5em} $z_T^{64}$ \hspace{0.5em} $z_{HRV}^{32}$ \\[0.3em]
+        $\downarrow$ \\[0.2em]
+        \textbf{EP-Constrained Gaussian Decoder} \\[0.2em]
+        $\hat{x}_t = \sum_w g_w A_w \exp(-(t-\tau_w)^2/2\sigma_w^2)$ \\[0.3em]
+        $\downarrow$ \\[0.2em]
+        \textbf{Soft EP Constraints:} $\tau_P < \tau_{QRS} < \tau_T$
+        \vspace{0.5em}
+    }}
+    \caption{EP-Prior framework. The encoder produces structured latent representations $(z_P, z_{QRS}, z_T, z_{HRV})$ with attention-pooled heads. The EP-constrained decoder reconstructs the signal using a Gaussian wave model with soft physiological constraints on timing, refractory periods, and durations.}
+    \label{fig:architecture}
+\end{figure}
+
+\subsection{Structured Encoder}
+
+The encoder $h_\theta$ maps 12-lead ECG to a structured latent space:
+\begin{equation}
+    h_\theta(x) = (z_P, z_{QRS}, z_T, z_{HRV}) \in \mathbb{R}^{d_P} \times \mathbb{R}^{d_{QRS}} \times \mathbb{R}^{d_T} \times \mathbb{R}^{d_{HRV}}
+\end{equation}
+
+\textbf{Implementation:} We use xresnet1d50~\cite{mehari2022ssl} as backbone, producing a temporal feature map $F \in \mathbb{R}^{B \times D \times L}$. For each wave $w \in \{P, QRS, T\}$:
+\begin{enumerate}
+    \item Compute attention logits $a_w(t)$ over $L$ positions
+    \item Get attention weights $\alpha_w = \text{softmax}(a_w)$
+    \item Compute wave-pooled feature $h_w = \sum_t \alpha_w(t) F[:,:,t]$
+    \item Project to latent $z_w = W_w h_w$
+\end{enumerate}
+HRV~\cite{hrvtaskforce1996} uses global average pooling followed by an MLP.
+
+\subsection{EP-Constrained Decoder}
+
+We use a \textbf{Gaussian wave state-space model}~\cite{mcsharry2003dynamical,clifford2006ecgsyn}:
+\begin{equation}
+    \hat{x}_t = \sum_{w \in \{P, QRS, T\}} g_w \cdot A_w \cdot \exp\left(-\frac{(t - \tau_w)^2}{2\sigma_w^2}\right)
+    \label{eq:decoder}
+\end{equation}
+where $(A_w, \tau_w, \sigma_w, g_w)$ are amplitude, timing, width, and presence gate for each wave. Parameters are predicted from the corresponding latent: $\tau_w = T \cdot \sigma(\text{MLP}_\tau(z_w))$, $\sigma_w = \text{softplus}(\text{MLP}_\sigma(z_w)) + \sigma_{min}$.
+
+\textbf{QRS mixture:} To capture Q/R/S morphology~\cite{pantompkins1985}, we use a mixture of $K=3$ Gaussians with shared center $\tau_{QRS}$ and small learned offsets.
+
+\textbf{Lead handling:} Timing $(\tau_w, \sigma_w)$ is shared across leads; amplitudes $A_w$ are per-lead, reflecting that electrical event timing is global while projection amplitude varies.
+
+\subsection{Training Objectives}
+
+\textbf{Total loss:}
+\begin{equation}
+    \mathcal{L} = \mathcal{L}_{recon} + \lambda_{EP}\mathcal{L}_{EP} + \lambda_{contrast}\mathcal{L}_{contrast}
+\end{equation}
+
+\textbf{Reconstruction:} $\mathcal{L}_{recon} = \|x - \hat{x}\|_2^2$
+
+\textbf{EP constraints (soft penalties):}
+\begin{align}
+    \mathcal{L}_{order} &= \text{softplus}(\tau_P - \tau_{QRS}) + \text{softplus}(\tau_{QRS} - \tau_T) \\
+    \mathcal{L}_{PR} &= \text{softplus}(\Delta_{PR}^{min} - (\tau_{QRS} - \tau_P)) \\
+    \mathcal{L}_{QT} &= \text{softplus}(\Delta_{QT}^{min} - (\tau_T - \tau_{QRS})) \\
+    \mathcal{L}_{\sigma} &= \sum_w \text{softplus}(\sigma_{min} - \sigma_w) + \text{softplus}(\sigma_w - \sigma_{max})
+\end{align}
+
+Constraints are gated by wave presence: $\mathcal{L}_{order} \leftarrow \mathcal{L}_{order} \cdot g_P \cdot g_{QRS} \cdot g_T$. This allows the model to handle pathological cases (e.g., absent P-wave in AFib) gracefully.
+
+\textbf{Contrastive:} Optional NT-Xent loss~\cite{chen2020simclr} on concatenated latents from augmented views.
+
+%==============================================================================
+\section{Experiments}
+\label{sec:experiments}
+%==============================================================================
+
+\subsection{Experimental Setup}
+
+\textbf{Dataset:} PTB-XL~\cite{wagner2020ptbxl} containing 21,837 12-lead ECG records (10s, 500Hz downsampled to 100Hz). PTB-XL provides 71 diagnostic statements grouped into 5 superclasses: NORM (normal), MI (myocardial infarction), STTC (ST-T changes), CD (conduction defects), and HYP (hypertrophy). We evaluate on the 5 superclasses following standard practice.
+
+\textbf{Task definition:} Multi-label classification where each ECG can have multiple diagnoses. We report class-average AUROC, computing AUROC per class then averaging.
+
+\textbf{Few-shot evaluation:} We subsample training sets to $\{10, 50, 100, 500\}$ examples per class using stratified sampling, ensuring each class has the specified number of positive examples. Models are evaluated on the full held-out test set (n=2,163). Results averaged over 10 random subsamples with standard deviation reported.
+
+\textbf{Baselines:}
+\begin{itemize}
+    \item \textbf{Supervised:} Train from scratch on limited labels (26.0M params)
+    \item \textbf{Generic SSL:} Same encoder backbone (xresnet1d50, 25.6M params) and latent dimension (256), but unstructured latent space and generic 3-layer MLP decoder (total 26.0M params)
+\end{itemize}
+EP-Prior uses the same backbone with structured heads and EP-constrained decoder (total 26.2M params). All SSL methods are pretrained on PTB-XL training set before few-shot evaluation. We compare against Generic SSL as our primary baseline to isolate the effect of EP constraints; comparison against PhysioCLR~\cite{physioclr2025} is deferred to future work pending code release.
+
+\textbf{Implementation:} We use PyTorch Lightning with AdamW optimizer (lr=$10^{-3}$), batch size 64, and train for 200 epochs. Loss weights: $\lambda_{recon}=1.0$, $\lambda_{EP}=0.5$, $\lambda_{contrast}=0.1$.
+
+\subsection{Few-Shot Classification}
+
+Table~\ref{tab:fewshot} shows AUROC on PTB-XL few-shot evaluation. EP-Prior achieves the largest gains in low-shot regimes, validating our theoretical prediction.
+
+\input{assets/table2_fewshot.tex}
+
+\subsection{Sample Efficiency Curves}
+
+Figure~\ref{fig:sample_efficiency} shows AUROC vs. training set size. EP-Prior's advantage is largest at low-$n$ and diminishes at full data, precisely matching the PAC-Bayes prediction.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.9\columnwidth]{figures/fig1_sample_efficiency.pdf}
+    \caption{Sample efficiency curves on PTB-XL. EP-Prior shows largest advantage in few-shot regimes (+7.2\% at 10-shot), converging toward baseline at higher data volumes (+1.4\% at 500-shot)---validating the PAC-Bayes prediction that prior-driven gains dominate when $n$ is small.}
+    \label{fig:sample_efficiency}
+\end{figure}
+
+\subsection{Interpretability Evaluation}
+
+We validate interpretability through three quantitative tests:
+
+\subsubsection{Concept Predictability}
+
+We train linear probes from individual latent components to predict corresponding pathologies (Table~\ref{tab:concept_pred}).
+
+\input{assets/table3_concept_pred.tex}
+
+\subsubsection{Intervention Selectivity}
+
+We vary one latent component while holding others fixed and measure changes in decoded parameters (Figure~\ref{fig:intervention}).
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.9\columnwidth]{figures/fig2_intervention_heatmap.pdf}
+    \caption{Intervention selectivity heatmap. Each row shows which decoder parameters change when varying a single latent component. Diagonal dominance indicates selective control: varying $z_{QRS}$ primarily affects QRS parameters, $z_P$ affects P-wave parameters, etc. Off-diagonal leakage is $<$10\% across all components.}
+    \label{fig:intervention}
+\end{figure}
+
+\textbf{Leakage metric:} We define leakage as the normalized change in off-target parameters when varying a single latent. For latent $z_i$ and parameter group $j \neq i$: $\text{Leakage}_{i \to j} = \frac{\|\Delta \theta_j\|}{\|\Delta \theta_i\|}$ where $\theta_j$ denotes parameters controlled by $z_j$. Low leakage indicates selective control.
+
+\textbf{Results:} The intervention heatmap (Figure~\ref{fig:intervention}) shows diagonal dominance: varying $z_{QRS}$ primarily affects QRS parameters while P-wave and T-wave parameters remain approximately invariant (off-diagonal leakage $<$10\%). This demonstrates that structured latents provide \emph{selective} control over corresponding waveform components---a key differentiator from post-hoc visualization methods like saliency maps.
+
+\subsubsection{Failure Mode Stratification}
+
+Table~\ref{tab:stratified} shows per-rhythm performance. EP-Prior excels on EP-valid rhythms and gracefully handles EP-violated cases.
+
+\input{assets/table4_per_condition.tex}
+
+\subsection{Ablation Studies}
+
+Table~\ref{tab:ablation} and Figure~\ref{fig:ablation} reveal a \textbf{critical finding}: EP constraints are essential for EP-Prior's performance. Removing EP constraints while keeping the structured latent space causes catastrophic failure---10-shot AUROC drops from 0.699 to 0.519, falling \emph{below} the baseline (0.627). This 18\% degradation proves that structured latents alone are insufficient; the EP constraint losses provide the inductive bias that enables sample-efficient learning.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.9\columnwidth]{figures/ablation_comparison.pdf}
+    \caption{Ablation study: EP constraints are essential. Without EP constraints, performance drops catastrophically below baseline, demonstrating that structured latents alone are insufficient---the physics-informed constraints drive the sample efficiency gains.}
+    \label{fig:ablation}
+\end{figure}
+
+\input{assets/table5_ablation.tex}
+
+\subsection{Latent Space Visualization}
+
+Figure~\ref{fig:tsne} shows t-SNE projections of the learned latent space. EP-Prior's representations cluster by diagnostic category, demonstrating that the structured latents capture clinically meaningful variation.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.9\columnwidth]{figures/fig5_latent_tsne.pdf}
+    \caption{t-SNE visualization of EP-Prior's latent space, colored by PTB-XL diagnostic superclass. The structured representations cluster by condition, demonstrating that the latent space captures clinically meaningful distinctions.}
+    \label{fig:tsne}
+\end{figure}
+
+\subsection{ECG Reconstruction and Decomposition}
+
+Figure~\ref{fig:reconstruction} shows qualitative examples of EP-Prior's wave decomposition, demonstrating interpretable intermediate representations.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.9\columnwidth]{figures/fig4_reconstruction_examples.pdf}
+    \caption{ECG reconstruction with wave decomposition. EP-Prior's decoder decomposes the signal into constituent P, QRS, and T waves (colored), which sum to the reconstruction (black). Clinicians can inspect predicted timing ($\tau$) and morphology ($\sigma$, $A$) for each wave component.}
+    \label{fig:reconstruction}
+\end{figure}
+
+%==============================================================================
+\section{Discussion}
+%==============================================================================
+
+\subsection{Why EP Priors Help}
+
+The cardiac EP prior reflects the true data generating process. Unlike generic augmentations, EP constraints encode:
+\begin{itemize}
+    \item Physical constraints that real ECGs must satisfy
+    \item Structural decomposition into clinically meaningful components
+    \item Temporal dynamics consistent with cardiac conduction
+\end{itemize}
+
+\subsection{Limitations}
+
+\begin{enumerate}
+    \item \textbf{Decoder fidelity:} Our Gaussian wave model is simplified; FEM-based decoders could improve reconstruction
+    \item \textbf{Lead geometry:} Current model shares timing across leads; cardiac geometry affects lead-specific morphology
+    \item \textbf{Severe arrhythmias:} VT/VF may violate most EP assumptions; our soft constraints degrade gracefully but gains are reduced
+\end{enumerate}
+
+\subsection{Broader Impact}
+
+\textbf{Clinical trust:} Interpretable representations let clinicians verify what the model learned, rather than treating it as a black box.
+
+\textbf{Regulatory compliance:} Explainable AI is increasingly required for medical device approval. EP-Prior provides concept-level parameters (timing, amplitude) that are directly inspectable.
+
+\textbf{Methodological template:} Our approach demonstrates how domain knowledge can be converted to architectural priors with theoretical grounding---applicable beyond ECG to other biosignals.
+
+%==============================================================================
+\section{Conclusion}
+%==============================================================================
+
+We presented EP-Prior, a method for learning \textbf{interpretable} ECG representations aligned with cardiac electrophysiology. Our structured latent space $(z_P, z_{QRS}, z_T, z_{HRV})$ provides clinically meaningful representations that can be inspected and validated through intervention tests and concept predictability. Experiments on PTB-XL demonstrate +7.2\% AUROC improvement in 10-shot classification, with gains across all five diagnostic categories.
+
+\textbf{Critical insight:} Our ablation study reveals that EP constraints are \emph{essential}---structured latents alone perform worse than baseline. This validates our PAC-Bayes-motivated design: the physics-informed constraints, not just architectural decomposition, provide the inductive bias that enables sample-efficient learning.
+
+\textbf{Key takeaway:} Domain knowledge must be embedded as \textbf{constraint losses}, not just architectural structure, to achieve both explainability and sample efficiency.
+
+\textbf{Clinical relevance.} EP-Prior's interpretable representations enable clinicians to: (1) verify that the model attends to appropriate waveform components for each diagnosis, (2) identify failure modes by examining which latent components show unusual values, and (3) build trust through transparent intermediate representations rather than end-to-end black boxes. This interpretability is crucial for clinical adoption in diagnostic workflows.
+
+\textbf{Limitations.} (1) Our Gaussian wave decoder assumes standard PQRST morphology; extreme arrhythmias (e.g., ventricular fibrillation) violate this assumption. (2) Evaluation is limited to PTB-XL; generalization to other populations and device types requires further validation. (3) Clinical utility of interpretable representations requires prospective evaluation with cardiologists.
+
+\textbf{Future work:} Clinical validation studies; extension to other biosignals (EEG, EMG) with domain-specific structures; theoretical analysis with tighter bounds.
+
+%==============================================================================
+% References
+%==============================================================================
+
+\bibliographystyle{named}
+\bibliography{ep_prior}
+
+\end{document}
+

@@ -22,46 +22,37 @@
 }
 
 @inproceedings{hong2019mina,
-  author = {Hong, Shenda and Zhou, Yanbo and Shang, Junyuan and Xiao, Cao and Sun, Jimeng},
+  author = {Hong, Shenda and Xiao, Cao and Ma, Tengfei and Li, Hongyan and Sun, Jimeng},
   title = {{MINA}: Multilevel Knowledge-Guided Attention for Modeling Electrocardiography Signals},
   booktitle = {Proceedings of the Twenty-Eighth International Joint Conference on Artificial Intelligence (IJCAI)},
   pages = {5888--5894},
-  year = {2019}
+  year = {2019},
+  note = {arXiv:1905.11333}
 }
 
 @article{physioclr2025,
-  author = {Chen, Wei and others},
+  author = {Maghsoodi, Nima and Nassar, Marcel},
   title = {Domain Knowledge is Power: Leveraging Physiological Priors for Self-Supervised Representation Learning in Electrocardiography},
-  journal = {arXiv preprint arXiv:2509.08116},
-  year = {2025}
-}
-
-@article{ecggraphnet2025,
-  author = {Wang, Zhengyang and others},
-  title = {Advanced arrhythmia classification based on {PQRST}-structured graph modeling},
-  journal = {PLoS ONE},
-  volume = {20},
-  number = {1},
-  pages = {e0315629},
+  journal = {arXiv preprint},
   year = {2025},
-  note = {PMC12411959}
+  note = {Available at Semantic Scholar}
 }
 
-@inproceedings{vaescan2025,
+% REMOVED: ecggraphnet2025 - unverified citation
+
+@inproceedings{higgins2017betavae,
   author = {Higgins, Irina and Matthey, Loic and Pal, Arka and Burgess, Christopher and Glorot, Xavier and Botvinick, Matthew and Mohamed, Shakir and Lerchner, Alexander},
   title = {$\beta$-{VAE}: Learning Basic Visual Concepts with a Constrained Variational Framework},
   booktitle = {International Conference on Learning Representations},
-  year = {2017},
-  note = {Applied to ECG disentanglement in follow-up works}
+  year = {2017}
 }
 
-@inproceedings{betatcvae2024,
+@inproceedings{chen2018betatcvae,
   author = {Chen, Ricky T. Q. and Li, Xuechen and Grosse, Roger and Duvenaud, David},
   title = {Isolating Sources of Disentanglement in Variational Autoencoders},
   booktitle = {Advances in Neural Information Processing Systems},
   volume = {31},
-  year = {2018},
-  note = {$\beta$-TCVAE; applied to biosignal disentanglement}
+  year = {2018}
 }
 
 @inproceedings{behboodi2024,
@@ -96,28 +87,27 @@
   year = {2015}
 }
 
-@inproceedings{eringis2024pacbayes,
-  author = {Eringis, Deividas and Rommel, Pierre and Hjalmarsson, H{\aa}kan and Abdalmoaty, Mohamed},
-  title = {{PAC-Bayes} bounds for learning dynamical systems},
-  booktitle = {Proceedings of the AAAI Conference on Artificial Intelligence},
-  year = {2024}
+@article{eringis2023pacbayes,
+  author = {Eringis, Deividas and Leth, John and Tan, Zheng-Hua and Wisniewski, Rafael and Petreczky, Mihaly},
+  title = {{PAC-Bayesian} bounds for learning {LTI}-ss systems with input from empirical loss},
+  journal = {arXiv preprint arXiv:2303.16816},
+  year = {2023},
+  url = {https://arxiv.org/abs/2303.16816}
 }
 
 @article{palczynski2022fewshot,
   author = {Palczy{\'n}ski, Krzysztof and Bie{\'n}kowski, Wojciech and Struniawski, Jacek},
-  title = {Few-shot learning for {ECG} classification},
-  journal = {Biomedical Signal Processing and Control},
-  volume = {78},
-  pages = {103912},
-  year = {2022}
+  title = {Study of the Few-Shot Learning for {ECG} Classification Based on the {PTB-XL} Dataset},
+  journal = {Sensors},
+  volume = {22},
+  number = {3},
+  pages = {904},
+  year = {2022},
+  doi = {10.3390/s22030904},
+  url = {https://www.mdpi.com/1424-8220/22/3/904}
 }
 
-@article{fan2025metatransfer,
-  author = {Fan, Xiang and others},
-  title = {Knowledge-enhanced meta-transfer for few-shot {ECG} classification},
-  journal = {Expert Systems with Applications},
-  year = {2025}
-}
+% REMOVED: fan2025metatransfer - unverified citation
 
 @article{mcsharry2003dynamical,
   author = {McSharry, Patrick E. and Clifford, Gari D. and Tarassenko, Lionel and Smith, Leonard A.},
@@ -156,14 +146,6 @@
   year = {2020}
 }
 
-@article{liu2021wearable,
-  author = {Liu, Yongxiang and others},
-  title = {Wearable {ECG} devices: Challenges and opportunities},
-  journal = {npj Digital Medicine},
-  volume = {4},
-  pages = {1--12},
-  year = {2021}
-}
 
 @article{pantompkins1985,
   author = {Pan, Jiapu and Tompkins, Willis J.},
@@ -177,12 +159,166 @@
 }
 
 @article{hrvtaskforce1996,
-  author = {{Task Force of the European Society of Cardiology and the North American Society of Pacing and Electrophysiology}},
+  author = {{Task Force of ESC and NASPE}},
   title = {Heart rate variability: Standards of measurement, physiological interpretation, and clinical use},
   journal = {Circulation},
   volume = {93},
   number = {5},
   pages = {1043--1065},
-  year = {1996}
+  year = {1996},
+  note = {Task Force of the European Society of Cardiology and the North American Society of Pacing and Electrophysiology}
+}
+
+% ===== NEW ENTRIES FROM LITERATURE EXPANSION (Prompt 10) =====
+
+@article{oord2018cpc,
+  author  = {van den Oord, Aaron and Li, Yazhe and Vinyals, Oriol},
+  title   = {Representation Learning with Contrastive Predictive Coding},
+  journal = {arXiv preprint arXiv:1807.03748},
+  year    = {2018}
+}
+
+@inproceedings{kiyasseh2021clocs,
+  author    = {Kiyasseh, Dani and Zhu, Ting and Clifton, David A.},
+  title     = {CLOCS: Contrastive Learning of Cardiac Signals Across Space, Time, and Patients},
+  booktitle = {Proceedings of the 38th International Conference on Machine Learning (ICML)},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {139},
+  pages     = {5606--5615},
+  year      = {2021},
+  publisher = {PMLR}
+}
+
+@article{diamant2022pclr,
+  author  = {Diamant, Nathaniel and Reinertsen, Erik and Song, Steven and Aguirre, Aaron D. and Stultz, Collin M. and Batra, Puneet},
+  title   = {Patient contrastive learning: A performant, expressive, and practical approach to electrocardiogram modeling},
+  journal = {PLOS Computational Biology},
+  year    = {2022},
+  volume  = {18},
+  number  = {2},
+  pages   = {e1009862},
+  doi     = {10.1371/journal.pcbi.1009862}
+}
+
+@article{liu2023denseleadcontrast,
+  author  = {Liu, Wenhan and Li, Zhoutong and Zhang, Huaicheng and Chang, Sheng and Wang, Hao and He, Jin and Huang, Qijun},
+  title   = {Dense lead contrast for self-supervised electrocardiogram representation learning},
+  journal = {Information Sciences},
+  year    = {2023},
+  volume  = {634},
+  pages   = {189--205},
+  doi     = {10.1016/j.ins.2023.03.099},
+  url     = {https://www.sciencedirect.com/science/article/abs/pii/S002002552300422X}
+}
+
+@article{sawano2024maeecg,
+  author  = {Sawano, Shinnosuke and Kodera, Satoshi and Setoguchi, Naoto and Tanabe, Kengo and Kushida, Shunichi and Kanda, Junji and Saji, Mike and Nanasato, Mamoru and Maki, Hisataka and Fujita, Hideo and others},
+  title   = {Applying masked autoencoder-based self-supervised learning for high-capability vision transformers of electrocardiographies},
+  journal = {PLOS ONE},
+  year    = {2024},
+  volume  = {19},
+  number  = {8},
+  pages   = {e0307978},
+  doi     = {10.1371/journal.pone.0307978},
+  url     = {https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0307978}
+}
+
+@article{mckeen2025ecgfm,
+  author  = {McKeen, Kaden and Masood, Sameer and Toma, Augustin and Rubin, Barry and Wang, Bo},
+  title   = {{ECG-FM}: an open electrocardiogram foundation model},
+  journal = {JAMIA Open},
+  year    = {2025},
+  volume  = {8},
+  number  = {5},
+  pages   = {ooaf122},
+  doi     = {10.1093/jamiaopen/ooaf122}
+}
+
+@inproceedings{zhou2025diffecg,
+  author    = {Zhou, Tianren and Jia, Zhenge and Yu, Dongxiao and Shen, Zhaoyan},
+  title     = {{DiffECG}: Diffusion Model-Powered Label-Efficient and Personalized Arrhythmia Diagnosis},
+  booktitle = {Proceedings of the Thirty-Fourth International Joint Conference on Artificial Intelligence (IJCAI-25)},
+  year      = {2025},
+  url       = {https://www.ijcai.org/proceedings/2025/890}
+}
+
+@article{weimann2021transfer,
+  author  = {Weimann, Katharina and Conrad, Tobias O. F.},
+  title   = {Transfer learning for ECG classification},
+  journal = {BMC Medical Informatics and Decision Making},
+  year    = {2021},
+  volume  = {21},
+  pages   = {135},
+  doi     = {10.1186/s12911-021-01549-9}
+}
+
+@article{patlatzoglou2025explainability,
+  author  = {Patlatzoglou, Katerina and Pastika, Liana and Barker, John and others},
+  title   = {The cost of explainability in artificial intelligence-enhanced electrocardiogram models},
+  journal = {npj Digital Medicine},
+  year    = {2025},
+  volume  = {8},
+  pages   = {747},
+  doi     = {10.1038/s41746-025-02122-y},
+  url     = {https://www.nature.com/articles/s41746-025-02122-y}
+}
+
+@article{zhang2021shap,
+  author  = {Zhang, Dongdong and Yang, Samuel and Yuan, Xiaohui and Zhang, Ping},
+  title   = {Interpretable deep learning for automatic diagnosis of 12-lead electrocardiogram},
+  journal = {iScience},
+  year    = {2021},
+  volume  = {24},
+  number  = {4},
+  pages   = {102373},
+  doi     = {10.1016/j.isci.2021.102373},
+  url     = {https://www.sciencedirect.com/science/article/pii/S2589004221003412}
+}
+
+@article{manimaran2025xai,
+  author  = {Manimaran, Gouthamaan and Peimankar, Rahman and others},
+  title   = {Explainable deep learning based techniques for {ECG}-based heart disease classification: A systematic literature review and future direction},
+  journal = {Computers in Biology and Medicine},
+  year    = {2025},
+  volume  = {199},
+  pages   = {111324},
+  doi     = {10.1016/j.compbiomed.2025.111324},
+  url     = {https://www.sciencedirect.com/science/article/pii/S0010482525016786}
+}
+
+@inproceedings{kuznetsov2018online,
+  author    = {Kuznetsov, Vitaly and Mohri, Mehryar},
+  title     = {Time Series Prediction and Online Learning},
+  booktitle = {Proceedings of the 31st Conference on Learning Theory (COLT)},
+  year      = {2018},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {75},
+  pages     = {2490--2513},
+  url       = {https://proceedings.mlr.press/v75/kuznetsov18a.html}
+}
+
+@article{alquier2008pacbayes,
+  author  = {Alquier, Pierre},
+  title   = {{PAC-Bayesian} Bounds for Randomized Empirical Risk Minimizers},
+  journal = {Mathematical Methods of Statistics},
+  year    = {2008},
+  volume  = {17},
+  number  = {4},
+  pages   = {279--304},
+  doi     = {10.3103/S1066530708040017},
+  note    = {Also arXiv:0712.1698}
+}
+
+
+@article{xie2022physicsconstrained,
+  author  = {Xie, Jianxin and Yao, Bing},
+  title   = {Physics-constrained deep learning to solve the inverse problem of electrocardiography},
+  journal = {IEEE Transactions on Biomedical Engineering},
+  year    = {2022},
+  volume  = {69},
+  number  = {8},
+  pages   = {2573--2584},
+  doi     = {10.1109/TBME.2022.3149536},
+  url     = {https://ieeexplore.ieee.org/document/9695519}
 }
 

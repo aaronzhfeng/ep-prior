@@ -1,28 +1,36 @@
-% Table 1: Related Work Comparison
-% Function: Position EP-Prior against prior art on 4 axes
+% Table 1: Related Work Comparison (Expanded)
+% Function: Position EP-Prior against prior art on 5 axes
 % Data Source: Manual/qualitative
 
 \begin{table}[t]
+\nolinenumbers
     \centering
     \caption{Comparison with related ECG methods.}
     \label{tab:related_work}
     \footnotesize
-    \begin{tabular}{lcccc}
+    \setlength{\tabcolsep}{3pt}
+    \begin{tabular}{@{}lccccc@{}}
         \toprule
-        \textbf{Method} & \textbf{Interp.} & \textbf{SSL} & \textbf{Theory} & \textbf{Factors} \\
+        \textbf{Method} & \textbf{SSL} & \textbf{Few-Shot} & \textbf{Interpretability} & \textbf{Theory} & \textbf{Factors} \\
         \midrule
-        PhysioCLR & \ding{55} & \ding{51} & \ding{55} & -- \\
-        Few-shot Meta & \ding{55} & \ding{55} & \ding{55} & -- \\
-        VAE-SCAN & Disc. & \ding{55} & \ding{55} & Learned \\
-        $\beta$-TCVAE & Disc. & \ding{55} & \ding{55} & Learned \\
-        ECG-GraphNet & Part. & \ding{55} & \ding{55} & Fixed \\
-        MINA & Part. & \ding{55} & \ding{55} & Multi \\
+        CLOCS~\shortcite{kiyasseh2021clocs} & \ding{51} & -- & -- & -- & -- \\
+        PCLR~\shortcite{diamant2022pclr} & \ding{51} & -- & -- & -- & -- \\
+        PhysioCLR~\shortcite{physioclr2025} & \ding{51} & -- & -- & -- & Impl. \\
+        DiffECG~\shortcite{zhou2025diffecg} & \ding{51} & \ding{51} & -- & -- & -- \\
         \midrule
-        \textbf{EP-Prior} & \textbf{Presc.} & \ding{51} & \ding{51} & \textbf{P/QRS/T/HRV} \\
+        Few-shot~\shortcite{palczynski2022fewshot} & -- & \ding{51} & -- & -- & -- \\
+        Transfer~\shortcite{weimann2021transfer} & -- & \ding{51} & -- & -- & -- \\
+        \midrule
+        MINA~\shortcite{hong2019mina} & -- & -- & Partial & -- & Hier. \\
+        \midrule
+        $\beta$-VAE~\shortcite{higgins2017betavae} & -- & -- & Discovered & -- & Lrn. \\
+        VAE-SCAN~\shortcite{patlatzoglou2025explainability} & -- & -- & Intrinsic & -- & Lrn. \\
+        \midrule
+        PINNs~\shortcite{sahli2020pinns} & -- & -- & Mechanistic & -- & PDE \\
+        \midrule
+        \textbf{EP-Prior} & \ding{51} & \ding{51} & \textbf{Prescribed} & \ding{51} & \textbf{P/Q/T} \\
         \bottomrule
     \end{tabular}
-    
-    \vspace{0.2em}
-    \scriptsize{\textit{Interp.}: Prescribed/Discovered/Partial. \textit{Factors}: Latent structure.}
+\linenumbers
 \end{table}
 
