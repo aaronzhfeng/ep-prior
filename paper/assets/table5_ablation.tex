@@ -1,0 +1,27 @@
+% Table 5: Ablation Study
+% Function: Isolate and prove the contribution of EP constraints
+% Data Source: ablation_summary.csv
+% Key Finding: No-EP (0.519) < Baseline (0.627) - EP constraints are ESSENTIAL
+
+\begin{table}[t]
+    \centering
+    \caption{Ablation: EP constraints are essential. Removing them causes \textbf{catastrophic failure}---AUROC drops \emph{below} the unstructured baseline.}
+    \label{tab:ablation}
+    \small
+    \begin{tabular}{lcccc}
+        \toprule
+        \textbf{Config.} & \textbf{10} & \textbf{50} & \textbf{100} & \textbf{500} \\
+        \midrule
+        \textbf{EP-Prior} & \textbf{.699} & \textbf{.790} & \textbf{.805} & \textbf{.826} \\
+        Baseline & .627 & .739 & .766 & .812 \\
+        \midrule
+        w/o EP loss & .519 \textcolor{red}{$\downarrow$} & .560 & .587 & .650 \\
+        \midrule
+        $\Delta$ (vs No-EP) & \textbf{+34.7\%} & +41.1\% & +37.1\% & +27.1\% \\
+        \bottomrule
+    \end{tabular}
+    \vspace{0.2em}
+    
+    \scriptsize{\textit{Without EP constraints, 10-shot drops to 0.519---17.2\% worse than baseline. Structured latents alone fail; EP constraints are necessary.}}
+\end{table}
+

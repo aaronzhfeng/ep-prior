@@ -1,0 +1,28 @@
+% Table 1: Related Work Comparison
+% Function: Position EP-Prior against prior art on 4 axes
+% Data Source: Manual/qualitative
+
+\begin{table}[t]
+    \centering
+    \caption{Comparison with related ECG methods.}
+    \label{tab:related_work}
+    \footnotesize
+    \begin{tabular}{lcccc}
+        \toprule
+        \textbf{Method} & \textbf{Interp.} & \textbf{SSL} & \textbf{Theory} & \textbf{Factors} \\
+        \midrule
+        PhysioCLR & \ding{55} & \ding{51} & \ding{55} & -- \\
+        Few-shot Meta & \ding{55} & \ding{55} & \ding{55} & -- \\
+        VAE-SCAN & Disc. & \ding{55} & \ding{55} & Learned \\
+        $\beta$-TCVAE & Disc. & \ding{55} & \ding{55} & Learned \\
+        ECG-GraphNet & Part. & \ding{55} & \ding{55} & Fixed \\
+        MINA & Part. & \ding{55} & \ding{55} & Multi \\
+        \midrule
+        \textbf{EP-Prior} & \textbf{Presc.} & \ding{51} & \ding{51} & \textbf{P/QRS/T/HRV} \\
+        \bottomrule
+    \end{tabular}
+    
+    \vspace{0.2em}
+    \scriptsize{\textit{Interp.}: Prescribed/Discovered/Partial. \textit{Factors}: Latent structure.}
+\end{table}
+

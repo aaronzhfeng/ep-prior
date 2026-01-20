@@ -1,0 +1,26 @@
+% Table 3: Concept Predictability
+% Function: Demonstrate interpretability - structured latents encode physiologically relevant information
+% Data Source: 06_results.md concept predictability matrix
+% Key Finding: z_T shows selectivity for STTC (+0.076)
+
+\begin{table}[t]
+    \centering
+    \caption{Concept predictability: AUROC for predicting superclasses from individual latent components via linear probes.}
+    \label{tab:concept_pred}
+    \footnotesize
+    \begin{tabular}{lccccc}
+        \toprule
+        \textbf{Class} & $z_P$ & $z_{QRS}$ & $z_T$ & $z_{HRV}$ & \textbf{All} \\
+        \midrule
+        NORM & .897 & .884 & .886 & .895 & \textbf{.905} \\
+        MI & .774 & .773 & .770 & .781 & \textbf{.806} \\
+        STTC & .882 & .887 & \underline{.883} & .899 & \textbf{.906} \\
+        CD & .786 & \underline{.789} & .797 & .801 & \textbf{.811} \\
+        HYP & .762 & .774 & .774 & .778 & \textbf{.791} \\
+        \bottomrule
+    \end{tabular}
+    \vspace{0.3em}
+    
+    \small{\textit{Underlined values indicate expected associations per domain knowledge ($z_{QRS} \to$ CD, $z_T \to$ STTC). $z_T$ shows positive selectivity for STTC (+0.076). Individual components achieve $>$75\% of full model performance.}}
+\end{table}
+

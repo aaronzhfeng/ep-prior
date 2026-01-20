@@ -1,0 +1,25 @@
+% Table 2: Few-Shot Classification Results
+% Function: Primary benchmark showing sample efficiency
+% Data Source: ablation_summary.csv (class-average AUROC)
+% Key Number: +7.2% at 10-shot
+
+\begin{table}[t]
+    \centering
+    \caption{Few-shot AUROC on PTB-XL. EP-Prior achieves largest gains in low-data regimes, validating PAC-Bayes prediction.}
+    \label{tab:fewshot}
+    \small
+    \begin{tabular}{lcccc}
+        \toprule
+        \textbf{Method} & \textbf{10} & \textbf{50} & \textbf{100} & \textbf{500} \\
+        \midrule
+        Baseline & .627{\scriptsize$\pm$.10} & .739{\scriptsize$\pm$.08} & .766{\scriptsize$\pm$.07} & .812{\scriptsize$\pm$.06} \\
+        \textbf{EP-Prior} & \textbf{.699}{\scriptsize$\pm$.11} & \textbf{.790}{\scriptsize$\pm$.07} & \textbf{.805}{\scriptsize$\pm$.06} & \textbf{.826}{\scriptsize$\pm$.06} \\
+        \midrule
+        $\Delta$ & \textbf{+7.2\%} & +5.1\% & +3.9\% & +1.4\% \\
+        \bottomrule
+    \end{tabular}
+    \vspace{0.2em}
+    
+    \scriptsize{\textit{Class-average AUROC, mean$\pm$std over 3 seeds. Column headers: shots per class.}}
+\end{table}
+

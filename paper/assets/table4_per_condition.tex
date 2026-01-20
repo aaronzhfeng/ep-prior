@@ -1,0 +1,26 @@
+% Table 4: Per-Condition Breakdown
+% Function: Show where EP-Prior helps most (morphology-related conditions)
+% Data Source: failure_mode_results.csv
+% Key Finding: Largest gains on MI (+3.6%) and HYP (+2.1%)
+
+\begin{table}[t]
+    \centering
+    \caption{Per-condition AUROC (500-shot). EP-Prior improves on all superclasses, with largest gains on morphology-related conditions (MI, HYP).}
+    \label{tab:stratified}
+    \footnotesize
+    \begin{tabular}{lcccc}
+        \toprule
+        \textbf{Class} & \textbf{$n$} & \textbf{Ours} & \textbf{Base} & \textbf{$\Delta$} \\
+        \midrule
+        NORM & 963 & .905 & .899 & +0.5\% \\
+        MI & 550 & \textbf{.806} & .770 & \textbf{+3.6\%} \\
+        STTC & 521 & .906 & .896 & +1.0\% \\
+        CD & 496 & .810 & .805 & +0.6\% \\
+        HYP & 262 & \textbf{.791} & .770 & \textbf{+2.1\%} \\
+        \bottomrule
+    \end{tabular}
+    \vspace{0.3em}
+    
+    \small{\textit{$n$ = number of test samples per condition. Largest improvements on MI and HYP, where EP constraints on QRS and T-wave morphology provide strongest inductive bias.}}
+\end{table}
+

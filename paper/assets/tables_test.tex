@@ -1,0 +1,40 @@
+\documentclass[letterpaper]{article}
+
+% Required packages
+\usepackage{booktabs}
+\usepackage{pifont}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage[margin=1in]{geometry}
+
+% For testing - mock citations (cite already exists, use renewcommand)
+\renewcommand{\cite}[1]{[#1]}
+
+\begin{document}
+
+\title{EP-Prior Tables - Compilation Test}
+\author{Test Document}
+\date{\today}
+\maketitle
+
+\section{Table 1: Related Work Comparison}
+\input{table1_related_work.tex}
+
+\newpage
+\section{Table 2: Few-Shot Classification Results}
+\input{table2_fewshot.tex}
+
+\newpage
+\section{Table 3: Concept Predictability}
+\input{table3_concept_pred.tex}
+
+\newpage
+\section{Table 4: Per-Condition Breakdown}
+\input{table4_per_condition.tex}
+
+\newpage
+\section{Table 5: Ablation Study}
+\input{table5_ablation.tex}
+
+\end{document}
+
